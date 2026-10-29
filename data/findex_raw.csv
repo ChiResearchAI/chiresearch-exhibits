@@ -1,0 +1,385 @@
+measure,root,cut,cid,country,year,value
+Account,account.t.d,total,IDN,Indonesia,2024,56.3278
+Account,account.t.d,total,IDN,Indonesia,2021,51.7553
+Account,account.t.d,total,IDN,Indonesia,2017,48.8575
+Account,account.t.d,total,IDN,Indonesia,2014,36.059
+Account,account.t.d,total,IDN,Indonesia,2011,19.582
+Account,account.t.d,total,IND,India,2024,89.0248
+Account,account.t.d,total,IND,India,2021,77.5291
+Account,account.t.d,total,IND,India,2017,79.8753
+Account,account.t.d,total,IND,India,2014,53.1416
+Account,account.t.d,total,IND,India,2011,35.2318
+Account,account.t.d,total,KEN,Kenya,2024,90.1199
+Account,account.t.d,total,KEN,Kenya,2021,79.1952
+Account,account.t.d,total,KEN,Kenya,2017,81.5676
+Account,account.t.d,total,KEN,Kenya,2014,74.6578
+Account,account.t.d,total,KEN,Kenya,2011,42.3435
+Account,account.t.d,total,VNM,Viet Nam,2024,70.5508
+Account,account.t.d,total,VNM,Viet Nam,2022,56.2658
+Account,account.t.d,total,VNM,Viet Nam,2017,30.7958
+Account,account.t.d,total,VNM,Viet Nam,2014,30.9509
+Account,account.t.d,total,VNM,Viet Nam,2011,21.3695
+Account,account.t.d,female,IDN,Indonesia,2024,58.0308
+Account,account.t.d,female,IDN,Indonesia,2021,52.3045
+Account,account.t.d,female,IDN,Indonesia,2017,51.3549
+Account,account.t.d,female,IDN,Indonesia,2014,37.464
+Account,account.t.d,female,IDN,Indonesia,2011,19.2075
+Account,account.t.d,female,IND,India,2024,89.2482
+Account,account.t.d,female,IND,India,2021,77.5526
+Account,account.t.d,female,IND,India,2017,76.6396
+Account,account.t.d,female,IND,India,2014,43.1326
+Account,account.t.d,female,IND,India,2011,26.4905
+Account,account.t.d,female,KEN,Kenya,2024,86.5155
+Account,account.t.d,female,KEN,Kenya,2021,75.3574
+Account,account.t.d,female,KEN,Kenya,2017,77.7464
+Account,account.t.d,female,KEN,Kenya,2014,71.1345
+Account,account.t.d,female,KEN,Kenya,2011,39.1788
+Account,account.t.d,female,VNM,Viet Nam,2024,69.8844
+Account,account.t.d,female,VNM,Viet Nam,2022,52.7808
+Account,account.t.d,female,VNM,Viet Nam,2017,30.4197
+Account,account.t.d,female,VNM,Viet Nam,2014,32.0312
+Account,account.t.d,female,VNM,Viet Nam,2011,18.9093
+Account,account.t.d,male,IDN,Indonesia,2024,54.6388
+Account,account.t.d,male,IDN,Indonesia,2021,51.1815
+Account,account.t.d,male,IDN,Indonesia,2017,46.2457
+Account,account.t.d,male,IDN,Indonesia,2014,34.6179
+Account,account.t.d,male,IDN,Indonesia,2011,19.9672
+Account,account.t.d,male,IND,India,2024,88.8052
+Account,account.t.d,male,IND,India,2021,77.5072
+Account,account.t.d,male,IND,India,2017,83.009
+Account,account.t.d,male,IND,India,2014,62.7634
+Account,account.t.d,male,IND,India,2011,43.7371
+Account,account.t.d,male,KEN,Kenya,2024,93.8895
+Account,account.t.d,male,KEN,Kenya,2021,83.245
+Account,account.t.d,male,KEN,Kenya,2017,85.8361
+Account,account.t.d,male,KEN,Kenya,2014,78.6579
+Account,account.t.d,male,KEN,Kenya,2011,45.6456
+Account,account.t.d,male,VNM,Viet Nam,2024,71.2493
+Account,account.t.d,male,VNM,Viet Nam,2022,59.9553
+Account,account.t.d,male,VNM,Viet Nam,2017,31.2051
+Account,account.t.d,male,VNM,Viet Nam,2014,29.8183
+Account,account.t.d,male,VNM,Viet Nam,2011,24.0046
+Account,account.t.d,poorest40,IDN,Indonesia,2024,48.4188
+Account,account.t.d,poorest40,IDN,Indonesia,2021,46.9314
+Account,account.t.d,poorest40,IDN,Indonesia,2017,36.5958
+Account,account.t.d,poorest40,IDN,Indonesia,2014,22.134
+Account,account.t.d,poorest40,IDN,Indonesia,2011,10.9731
+Account,account.t.d,poorest40,IND,India,2024,86.3167
+Account,account.t.d,poorest40,IND,India,2021,78.2528
+Account,account.t.d,poorest40,IND,India,2017,77.083
+Account,account.t.d,poorest40,IND,India,2014,43.6107
+Account,account.t.d,poorest40,IND,India,2011,26.9715
+Account,account.t.d,poorest40,KEN,Kenya,2024,83.8762
+Account,account.t.d,poorest40,KEN,Kenya,2021,67.4495
+Account,account.t.d,poorest40,KEN,Kenya,2017,70.4535
+Account,account.t.d,poorest40,KEN,Kenya,2014,63.1689
+Account,account.t.d,poorest40,KEN,Kenya,2011,19.4352
+Account,account.t.d,poorest40,VNM,Viet Nam,2024,48.1092
+Account,account.t.d,poorest40,VNM,Viet Nam,2022,40.6904
+Account,account.t.d,poorest40,VNM,Viet Nam,2017,20.2775
+Account,account.t.d,poorest40,VNM,Viet Nam,2014,18.7117
+Account,account.t.d,poorest40,VNM,Viet Nam,2011,11.0486
+Account,account.t.d,richest60,IDN,Indonesia,2024,61.5891
+Account,account.t.d,richest60,IDN,Indonesia,2021,54.9663
+Account,account.t.d,richest60,IDN,Indonesia,2017,57.0204
+Account,account.t.d,richest60,IDN,Indonesia,2014,45.2678
+Account,account.t.d,richest60,IDN,Indonesia,2011,25.2949
+Account,account.t.d,richest60,IND,India,2024,90.8312
+Account,account.t.d,richest60,IND,India,2021,77.0477
+Account,account.t.d,richest60,IND,India,2017,81.7354
+Account,account.t.d,richest60,IND,India,2014,59.484
+Account,account.t.d,richest60,IND,India,2011,40.73
+Account,account.t.d,richest60,KEN,Kenya,2024,94.2666
+Account,account.t.d,richest60,KEN,Kenya,2021,87.02
+Account,account.t.d,richest60,KEN,Kenya,2017,88.9395
+Account,account.t.d,richest60,KEN,Kenya,2014,82.2843
+Account,account.t.d,richest60,KEN,Kenya,2011,57.5335
+Account,account.t.d,richest60,VNM,Viet Nam,2024,85.4863
+Account,account.t.d,richest60,VNM,Viet Nam,2022,66.6332
+Account,account.t.d,richest60,VNM,Viet Nam,2017,37.8078
+Account,account.t.d,richest60,VNM,Viet Nam,2014,39.056
+Account,account.t.d,richest60,VNM,Viet Nam,2011,28.2413
+Debit card,fin2.t.d,total,IDN,Indonesia,2024,41.3946
+Debit card,fin2.t.d,total,IDN,Indonesia,2021,35.101
+Debit card,fin2.t.d,total,IDN,Indonesia,2017,30.8111
+Debit card,fin2.t.d,total,IDN,Indonesia,2014,25.9448
+Debit card,fin2.t.d,total,IDN,Indonesia,2011,10.5394
+Debit card,fin2.t.d,total,IND,India,2024,37.5621
+Debit card,fin2.t.d,total,IND,India,2021,27.0681
+Debit card,fin2.t.d,total,IND,India,2017,32.722
+Debit card,fin2.t.d,total,IND,India,2014,22.068
+Debit card,fin2.t.d,total,IND,India,2011,8.3995
+Debit card,fin2.t.d,total,KEN,Kenya,2024,19.5142
+Debit card,fin2.t.d,total,KEN,Kenya,2021,22.4163
+Debit card,fin2.t.d,total,KEN,Kenya,2017,37.5505
+Debit card,fin2.t.d,total,KEN,Kenya,2014,34.6589
+Debit card,fin2.t.d,total,KEN,Kenya,2011,29.9401
+Debit card,fin2.t.d,total,VNM,Viet Nam,2024,64.8173
+Debit card,fin2.t.d,total,VNM,Viet Nam,2022,48.8736
+Debit card,fin2.t.d,total,VNM,Viet Nam,2017,26.7382
+Debit card,fin2.t.d,total,VNM,Viet Nam,2014,26.5055
+Debit card,fin2.t.d,total,VNM,Viet Nam,2011,14.5907
+Debit card,fin2.t.d,female,IDN,Indonesia,2024,42.6495
+Debit card,fin2.t.d,female,IDN,Indonesia,2021,36.4597
+Debit card,fin2.t.d,female,IDN,Indonesia,2017,32.4468
+Debit card,fin2.t.d,female,IDN,Indonesia,2014,26.4737
+Debit card,fin2.t.d,female,IDN,Indonesia,2011,9.5224
+Debit card,fin2.t.d,female,IND,India,2024,29.7799
+Debit card,fin2.t.d,female,IND,India,2021,19.078
+Debit card,fin2.t.d,female,IND,India,2017,22.3443
+Debit card,fin2.t.d,female,IND,India,2014,11.4086
+Debit card,fin2.t.d,female,KEN,Kenya,2024,14.4005
+Debit card,fin2.t.d,female,KEN,Kenya,2021,17.6996
+Debit card,fin2.t.d,female,KEN,Kenya,2017,30.4809
+Debit card,fin2.t.d,female,KEN,Kenya,2014,33.1857
+Debit card,fin2.t.d,female,KEN,Kenya,2011,25.3021
+Debit card,fin2.t.d,female,VNM,Viet Nam,2024,63.6524
+Debit card,fin2.t.d,female,VNM,Viet Nam,2022,45.5243
+Debit card,fin2.t.d,female,VNM,Viet Nam,2017,27.3477
+Debit card,fin2.t.d,female,VNM,Viet Nam,2014,28.6565
+Debit card,fin2.t.d,female,VNM,Viet Nam,2011,13.2843
+Debit card,fin2.t.d,male,IDN,Indonesia,2024,40.15
+Debit card,fin2.t.d,male,IDN,Indonesia,2021,33.6813
+Debit card,fin2.t.d,male,IDN,Indonesia,2017,29.1006
+Debit card,fin2.t.d,male,IDN,Indonesia,2014,25.4023
+Debit card,fin2.t.d,male,IDN,Indonesia,2011,11.5857
+Debit card,fin2.t.d,male,IND,India,2024,45.2108
+Debit card,fin2.t.d,male,IND,India,2021,34.5235
+Debit card,fin2.t.d,male,IND,India,2017,42.7725
+Debit card,fin2.t.d,male,IND,India,2014,32.3151
+Debit card,fin2.t.d,male,KEN,Kenya,2024,24.8623
+Debit card,fin2.t.d,male,KEN,Kenya,2021,27.3938
+Debit card,fin2.t.d,male,KEN,Kenya,2017,45.4476
+Debit card,fin2.t.d,male,KEN,Kenya,2014,36.3315
+Debit card,fin2.t.d,male,KEN,Kenya,2011,34.7797
+Debit card,fin2.t.d,male,VNM,Viet Nam,2024,66.0385
+Debit card,fin2.t.d,male,VNM,Viet Nam,2022,52.4195
+Debit card,fin2.t.d,male,VNM,Viet Nam,2017,26.0748
+Debit card,fin2.t.d,male,VNM,Viet Nam,2014,24.2502
+Debit card,fin2.t.d,male,VNM,Viet Nam,2011,15.99
+Debit card,fin2.t.d,poorest40,IDN,Indonesia,2024,30.6761
+Debit card,fin2.t.d,poorest40,IDN,Indonesia,2021,25.549
+Debit card,fin2.t.d,poorest40,IDN,Indonesia,2017,18.5814
+Debit card,fin2.t.d,poorest40,IDN,Indonesia,2014,12.5265
+Debit card,fin2.t.d,poorest40,IDN,Indonesia,2011,4.0453
+Debit card,fin2.t.d,poorest40,IND,India,2024,22.6654
+Debit card,fin2.t.d,poorest40,IND,India,2021,15.5084
+Debit card,fin2.t.d,poorest40,IND,India,2017,16.9962
+Debit card,fin2.t.d,poorest40,IND,India,2014,10.5561
+Debit card,fin2.t.d,poorest40,KEN,Kenya,2024,13.3842
+Debit card,fin2.t.d,poorest40,KEN,Kenya,2021,11.1244
+Debit card,fin2.t.d,poorest40,KEN,Kenya,2017,18.8933
+Debit card,fin2.t.d,poorest40,KEN,Kenya,2014,15.9505
+Debit card,fin2.t.d,poorest40,KEN,Kenya,2011,7.8914
+Debit card,fin2.t.d,poorest40,VNM,Viet Nam,2024,42.1767
+Debit card,fin2.t.d,poorest40,VNM,Viet Nam,2022,34.4164
+Debit card,fin2.t.d,poorest40,VNM,Viet Nam,2017,16.3831
+Debit card,fin2.t.d,poorest40,VNM,Viet Nam,2014,15.0012
+Debit card,fin2.t.d,poorest40,VNM,Viet Nam,2011,7.2819
+Debit card,fin2.t.d,richest60,IDN,Indonesia,2024,48.5248
+Debit card,fin2.t.d,richest60,IDN,Indonesia,2021,41.459
+Debit card,fin2.t.d,richest60,IDN,Indonesia,2017,38.9527
+Debit card,fin2.t.d,richest60,IDN,Indonesia,2014,34.8184
+Debit card,fin2.t.d,richest60,IDN,Indonesia,2011,14.849
+Debit card,fin2.t.d,richest60,IND,India,2024,47.4984
+Debit card,fin2.t.d,richest60,IND,India,2021,34.7588
+Debit card,fin2.t.d,richest60,IND,India,2017,43.1974
+Debit card,fin2.t.d,richest60,IND,India,2014,29.7288
+Debit card,fin2.t.d,richest60,KEN,Kenya,2024,23.5853
+Debit card,fin2.t.d,richest60,KEN,Kenya,2021,29.9389
+Debit card,fin2.t.d,richest60,KEN,Kenya,2017,49.9257
+Debit card,fin2.t.d,richest60,KEN,Kenya,2014,47.0778
+Debit card,fin2.t.d,richest60,KEN,Kenya,2011,44.5602
+Debit card,fin2.t.d,richest60,VNM,Viet Nam,2024,79.8852
+Debit card,fin2.t.d,richest60,VNM,Viet Nam,2022,58.4966
+Debit card,fin2.t.d,richest60,VNM,Viet Nam,2017,33.6414
+Debit card,fin2.t.d,richest60,VNM,Viet Nam,2014,34.1238
+Debit card,fin2.t.d,richest60,VNM,Viet Nam,2011,19.457
+Saved at FI or mobile money,fin17a.17a1.d,total,IDN,Indonesia,2024,27.2704
+Saved at FI or mobile money,fin17a.17a1.d,total,IDN,Indonesia,2021,20.4983
+Saved at FI or mobile money,fin17a.17a1.d,total,IDN,Indonesia,2017,21.5344
+Saved at FI or mobile money,fin17a.17a1.d,total,IDN,Indonesia,2014,26.5631
+Saved at FI or mobile money,fin17a.17a1.d,total,IDN,Indonesia,2011,15.2883
+Saved at FI or mobile money,fin17a.17a1.d,total,IND,India,2024,26.9861
+Saved at FI or mobile money,fin17a.17a1.d,total,IND,India,2021,14.0873
+Saved at FI or mobile money,fin17a.17a1.d,total,IND,India,2017,19.604
+Saved at FI or mobile money,fin17a.17a1.d,total,IND,India,2014,14.3601
+Saved at FI or mobile money,fin17a.17a1.d,total,IND,India,2011,11.604
+Saved at FI or mobile money,fin17a.17a1.d,total,KEN,Kenya,2024,54.4226
+Saved at FI or mobile money,fin17a.17a1.d,total,KEN,Kenya,2021,45.0111
+Saved at FI or mobile money,fin17a.17a1.d,total,KEN,Kenya,2017,26.7844
+Saved at FI or mobile money,fin17a.17a1.d,total,KEN,Kenya,2014,30.1838
+Saved at FI or mobile money,fin17a.17a1.d,total,KEN,Kenya,2011,23.282
+Saved at FI or mobile money,fin17a.17a1.d,total,VNM,Viet Nam,2024,44.5063
+Saved at FI or mobile money,fin17a.17a1.d,total,VNM,Viet Nam,2022,20.7122
+Saved at FI or mobile money,fin17a.17a1.d,total,VNM,Viet Nam,2017,14.4827
+Saved at FI or mobile money,fin17a.17a1.d,total,VNM,Viet Nam,2014,14.6058
+Saved at FI or mobile money,fin17a.17a1.d,total,VNM,Viet Nam,2011,7.7408
+Saved at FI or mobile money,fin17a.17a1.d,female,IDN,Indonesia,2024,25.3148
+Saved at FI or mobile money,fin17a.17a1.d,female,IDN,Indonesia,2021,18.8856
+Saved at FI or mobile money,fin17a.17a1.d,female,IDN,Indonesia,2017,22.3003
+Saved at FI or mobile money,fin17a.17a1.d,female,IDN,Indonesia,2014,26.7625
+Saved at FI or mobile money,fin17a.17a1.d,female,IDN,Indonesia,2011,15.865
+Saved at FI or mobile money,fin17a.17a1.d,female,IND,India,2024,22.8093
+Saved at FI or mobile money,fin17a.17a1.d,female,IND,India,2021,12.7363
+Saved at FI or mobile money,fin17a.17a1.d,female,IND,India,2017,16.692
+Saved at FI or mobile money,fin17a.17a1.d,female,IND,India,2014,10.1291
+Saved at FI or mobile money,fin17a.17a1.d,female,IND,India,2011,7.0955
+Saved at FI or mobile money,fin17a.17a1.d,female,KEN,Kenya,2024,49.1445
+Saved at FI or mobile money,fin17a.17a1.d,female,KEN,Kenya,2021,39.3926
+Saved at FI or mobile money,fin17a.17a1.d,female,KEN,Kenya,2017,18.5047
+Saved at FI or mobile money,fin17a.17a1.d,female,KEN,Kenya,2014,27.9277
+Saved at FI or mobile money,fin17a.17a1.d,female,KEN,Kenya,2011,19.2015
+Saved at FI or mobile money,fin17a.17a1.d,female,VNM,Viet Nam,2024,46.5047
+Saved at FI or mobile money,fin17a.17a1.d,female,VNM,Viet Nam,2022,19.6992
+Saved at FI or mobile money,fin17a.17a1.d,female,VNM,Viet Nam,2017,16.2347
+Saved at FI or mobile money,fin17a.17a1.d,female,VNM,Viet Nam,2014,13.6626
+Saved at FI or mobile money,fin17a.17a1.d,male,IDN,Indonesia,2024,29.21
+Saved at FI or mobile money,fin17a.17a1.d,male,IDN,Indonesia,2021,22.1832
+Saved at FI or mobile money,fin17a.17a1.d,male,IDN,Indonesia,2017,20.7335
+Saved at FI or mobile money,fin17a.17a1.d,male,IDN,Indonesia,2014,26.3585
+Saved at FI or mobile money,fin17a.17a1.d,male,IDN,Indonesia,2011,14.695
+Saved at FI or mobile money,fin17a.17a1.d,male,IND,India,2024,31.0913
+Saved at FI or mobile money,fin17a.17a1.d,male,IND,India,2021,15.3479
+Saved at FI or mobile money,fin17a.17a1.d,male,IND,India,2017,22.4241
+Saved at FI or mobile money,fin17a.17a1.d,male,IND,India,2014,18.4274
+Saved at FI or mobile money,fin17a.17a1.d,male,IND,India,2011,15.9907
+Saved at FI or mobile money,fin17a.17a1.d,male,KEN,Kenya,2024,59.9426
+Saved at FI or mobile money,fin17a.17a1.d,male,KEN,Kenya,2021,50.9402
+Saved at FI or mobile money,fin17a.17a1.d,male,KEN,Kenya,2017,36.0334
+Saved at FI or mobile money,fin17a.17a1.d,male,KEN,Kenya,2014,32.7451
+Saved at FI or mobile money,fin17a.17a1.d,male,KEN,Kenya,2011,27.5398
+Saved at FI or mobile money,fin17a.17a1.d,male,VNM,Viet Nam,2024,42.4113
+Saved at FI or mobile money,fin17a.17a1.d,male,VNM,Viet Nam,2022,21.7846
+Saved at FI or mobile money,fin17a.17a1.d,male,VNM,Viet Nam,2017,12.5759
+Saved at FI or mobile money,fin17a.17a1.d,male,VNM,Viet Nam,2014,15.5947
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IDN,Indonesia,2024,15.153
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IDN,Indonesia,2021,11.6035
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IDN,Indonesia,2017,13.1334
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IDN,Indonesia,2014,14.6294
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IDN,Indonesia,2011,7.4035
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IND,India,2024,14.895
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IND,India,2021,7.864
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IND,India,2017,11.7912
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IND,India,2014,7.2336
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,IND,India,2011,10.4111
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,KEN,Kenya,2024,38.4351
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,KEN,Kenya,2021,31.5661
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,KEN,Kenya,2017,14.4145
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,KEN,Kenya,2014,16.0641
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,KEN,Kenya,2011,10.095
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,VNM,Viet Nam,2024,27.5554
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,VNM,Viet Nam,2022,11.2132
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,VNM,Viet Nam,2017,9.0031
+Saved at FI or mobile money,fin17a.17a1.d,poorest40,VNM,Viet Nam,2014,8.6439
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IDN,Indonesia,2024,35.3312
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IDN,Indonesia,2021,26.419
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IDN,Indonesia,2017,27.1271
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IDN,Indonesia,2014,34.4549
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IDN,Indonesia,2011,20.5207
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IND,India,2024,35.051
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IND,India,2021,18.2278
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IND,India,2017,24.8083
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IND,India,2014,19.1026
+Saved at FI or mobile money,fin17a.17a1.d,richest60,IND,India,2011,12.3979
+Saved at FI or mobile money,fin17a.17a1.d,richest60,KEN,Kenya,2024,65.0404
+Saved at FI or mobile money,fin17a.17a1.d,richest60,KEN,Kenya,2021,53.9681
+Saved at FI or mobile money,fin17a.17a1.d,richest60,KEN,Kenya,2017,34.9893
+Saved at FI or mobile money,fin17a.17a1.d,richest60,KEN,Kenya,2014,39.5566
+Saved at FI or mobile money,fin17a.17a1.d,richest60,KEN,Kenya,2011,32.026
+Saved at FI or mobile money,fin17a.17a1.d,richest60,VNM,Viet Nam,2024,55.7877
+Saved at FI or mobile money,fin17a.17a1.d,richest60,VNM,Viet Nam,2022,27.035
+Saved at FI or mobile money,fin17a.17a1.d,richest60,VNM,Viet Nam,2017,18.1356
+Saved at FI or mobile money,fin17a.17a1.d,richest60,VNM,Viet Nam,2014,18.5539
+Digital merchant payment,merchant.pay,total,IDN,Indonesia,2024,13.5958
+Digital merchant payment,merchant.pay,total,IDN,Indonesia,2021,12.9545
+Digital merchant payment,merchant.pay,total,IND,India,2024,18.3006
+Digital merchant payment,merchant.pay,total,IND,India,2021,11.9046
+Digital merchant payment,merchant.pay,total,KEN,Kenya,2024,55.757
+Digital merchant payment,merchant.pay,total,KEN,Kenya,2021,36.814
+Digital merchant payment,merchant.pay,total,VNM,Viet Nam,2024,51.1261
+Digital merchant payment,merchant.pay,total,VNM,Viet Nam,2022,24.2619
+Digital merchant payment,merchant.pay,female,IDN,Indonesia,2024,11.6815
+Digital merchant payment,merchant.pay,female,IDN,Indonesia,2021,13.5854
+Digital merchant payment,merchant.pay,female,IND,India,2024,11.1097
+Digital merchant payment,merchant.pay,female,IND,India,2021,5.6815
+Digital merchant payment,merchant.pay,female,KEN,Kenya,2024,51.3613
+Digital merchant payment,merchant.pay,female,KEN,Kenya,2021,29.5374
+Digital merchant payment,merchant.pay,female,VNM,Viet Nam,2024,52.694
+Digital merchant payment,merchant.pay,female,VNM,Viet Nam,2022,22.7688
+Digital merchant payment,merchant.pay,male,IDN,Indonesia,2024,15.4943
+Digital merchant payment,merchant.pay,male,IDN,Indonesia,2021,12.2953
+Digital merchant payment,merchant.pay,male,IND,India,2024,25.3682
+Digital merchant payment,merchant.pay,male,IND,India,2021,17.7112
+Digital merchant payment,merchant.pay,male,KEN,Kenya,2024,60.3542
+Digital merchant payment,merchant.pay,male,KEN,Kenya,2021,44.4928
+Digital merchant payment,merchant.pay,male,VNM,Viet Nam,2024,49.4824
+Digital merchant payment,merchant.pay,male,VNM,Viet Nam,2022,25.8427
+Digital merchant payment,merchant.pay,poorest40,IDN,Indonesia,2024,8.1844
+Digital merchant payment,merchant.pay,poorest40,IDN,Indonesia,2021,9.2569
+Digital merchant payment,merchant.pay,poorest40,IND,India,2024,6.1416
+Digital merchant payment,merchant.pay,poorest40,IND,India,2021,4.1798
+Digital merchant payment,merchant.pay,poorest40,KEN,Kenya,2024,41.918
+Digital merchant payment,merchant.pay,poorest40,KEN,Kenya,2021,18.1223
+Digital merchant payment,merchant.pay,poorest40,VNM,Viet Nam,2024,26.4817
+Digital merchant payment,merchant.pay,poorest40,VNM,Viet Nam,2022,13.2494
+Digital merchant payment,merchant.pay,richest60,IDN,Indonesia,2024,17.1956
+Digital merchant payment,merchant.pay,richest60,IDN,Indonesia,2021,15.4157
+Digital merchant payment,merchant.pay,richest60,IND,India,2024,26.4108
+Digital merchant payment,merchant.pay,richest60,IND,India,2021,17.0439
+Digital merchant payment,merchant.pay,richest60,KEN,Kenya,2024,64.948
+Digital merchant payment,merchant.pay,richest60,KEN,Kenya,2021,49.2662
+Digital merchant payment,merchant.pay,richest60,VNM,Viet Nam,2024,67.5277
+Digital merchant payment,merchant.pay,richest60,VNM,Viet Nam,2022,31.5922
+Mobile money account,mobileaccount.t.d,total,IDN,Indonesia,2024,22.0129
+Mobile money account,mobileaccount.t.d,total,IDN,Indonesia,2021,9.2923
+Mobile money account,mobileaccount.t.d,total,IDN,Indonesia,2017,3.1239
+Mobile money account,mobileaccount.t.d,total,IDN,Indonesia,2014,0.4496
+Mobile money account,mobileaccount.t.d,total,IND,India,2024,23.1008
+Mobile money account,mobileaccount.t.d,total,IND,India,2021,10.4397
+Mobile money account,mobileaccount.t.d,total,IND,India,2017,1.9945
+Mobile money account,mobileaccount.t.d,total,IND,India,2014,2.3522
+Mobile money account,mobileaccount.t.d,total,KEN,Kenya,2024,87.4994
+Mobile money account,mobileaccount.t.d,total,KEN,Kenya,2021,68.6587
+Mobile money account,mobileaccount.t.d,total,KEN,Kenya,2017,72.9317
+Mobile money account,mobileaccount.t.d,total,KEN,Kenya,2014,58.3926
+Mobile money account,mobileaccount.t.d,total,VNM,Viet Nam,2024,38.7233
+Mobile money account,mobileaccount.t.d,total,VNM,Viet Nam,2022,16.4659
+Mobile money account,mobileaccount.t.d,total,VNM,Viet Nam,2017,3.4995
+Mobile money account,mobileaccount.t.d,total,VNM,Viet Nam,2014,0.4965
+Mobile money account,mobileaccount.t.d,female,IDN,Indonesia,2024,19.8778
+Mobile money account,mobileaccount.t.d,female,IND,India,2024,14.2309
+Mobile money account,mobileaccount.t.d,female,IND,India,2021,5.1159
+Mobile money account,mobileaccount.t.d,female,KEN,Kenya,2024,83.5097
+Mobile money account,mobileaccount.t.d,female,KEN,Kenya,2021,66.0428
+Mobile money account,mobileaccount.t.d,female,KEN,Kenya,2017,69.3801
+Mobile money account,mobileaccount.t.d,female,KEN,Kenya,2014,54.9044
+Mobile money account,mobileaccount.t.d,female,VNM,Viet Nam,2024,37.0167
+Mobile money account,mobileaccount.t.d,female,VNM,Viet Nam,2022,14.7426
+Mobile money account,mobileaccount.t.d,male,IDN,Indonesia,2024,24.1305
+Mobile money account,mobileaccount.t.d,male,IND,India,2024,31.8183
+Mobile money account,mobileaccount.t.d,male,IND,India,2021,15.4072
+Mobile money account,mobileaccount.t.d,male,KEN,Kenya,2024,91.672
+Mobile money account,mobileaccount.t.d,male,KEN,Kenya,2021,71.4192
+Mobile money account,mobileaccount.t.d,male,KEN,Kenya,2017,76.899
+Mobile money account,mobileaccount.t.d,male,KEN,Kenya,2014,62.3528
+Mobile money account,mobileaccount.t.d,male,VNM,Viet Nam,2024,40.5125
+Mobile money account,mobileaccount.t.d,male,VNM,Viet Nam,2022,18.2905
+Mobile money account,mobileaccount.t.d,poorest40,IDN,Indonesia,2024,12.1587
+Mobile money account,mobileaccount.t.d,poorest40,IND,India,2024,9.5978
+Mobile money account,mobileaccount.t.d,poorest40,IND,India,2021,3.3442
+Mobile money account,mobileaccount.t.d,poorest40,KEN,Kenya,2024,80.3533
+Mobile money account,mobileaccount.t.d,poorest40,KEN,Kenya,2021,56.0262
+Mobile money account,mobileaccount.t.d,poorest40,KEN,Kenya,2017,59.3647
+Mobile money account,mobileaccount.t.d,poorest40,KEN,Kenya,2014,51.8442
+Mobile money account,mobileaccount.t.d,poorest40,VNM,Viet Nam,2024,22.3193
+Mobile money account,mobileaccount.t.d,poorest40,VNM,Viet Nam,2022,6.9685
+Mobile money account,mobileaccount.t.d,richest60,IDN,Indonesia,2024,28.5681
+Mobile money account,mobileaccount.t.d,richest60,IND,India,2024,32.1073
+Mobile money account,mobileaccount.t.d,richest60,IND,India,2021,15.1604
+Mobile money account,mobileaccount.t.d,richest60,KEN,Kenya,2024,92.2454
+Mobile money account,mobileaccount.t.d,richest60,KEN,Kenya,2021,77.0744
+Mobile money account,mobileaccount.t.d,richest60,KEN,Kenya,2017,81.9306
+Mobile money account,mobileaccount.t.d,richest60,KEN,Kenya,2014,62.7396
+Mobile money account,mobileaccount.t.d,richest60,VNM,Viet Nam,2024,49.6406
+Mobile money account,mobileaccount.t.d,richest60,VNM,Viet Nam,2022,22.7877
