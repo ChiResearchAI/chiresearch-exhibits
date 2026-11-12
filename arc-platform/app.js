@@ -66,10 +66,11 @@ async function load(geo) {
 }
 const setBusy = b => document.getElementById('busy').style.display = b ? 'flex' : 'none';
 
-/* ARC publishes its region flag on counties. Tract GEOIDs nest inside county GEOIDs
-   (state 2 + county 3 + tract 6), so the region extends to tracts by prefix. Place
-   codes do not nest in counties, so city extent is statewide and is labelled as such
-   rather than implied to be regional. */
+/* ARC publishes its region flag on counties and on cities. Tract GEOIDs nest inside
+   county GEOIDs (state 2 + county 3 + tract 6), so the region extends to tracts by
+   prefix. Cities carry ARC's own PlanningRegion value directly, including hybrid
+   values such as "ARC / GM" for places that straddle a region boundary; those are
+   counted in the region and the count is shown. */
 let ARC_FIPS = null;
 async function arcFips() {
   if (ARC_FIPS) return ARC_FIPS;
@@ -83,6 +84,10 @@ function inRegion(props) {
   if (S.region !== 'arc') return true;
   if (S.geo === 'county') return props.PlanningRegion === 'Atlanta Regional Commission';
   if (S.geo === 'tract' && ARC_FIPS) return ARC_FIPS.has(String(props.GEOID).slice(0, 5));
+  if (S.geo === 'city') {
+    const pr = props.PlanningRegion || '';
+    return pr === 'Atlanta Regional Commission' || pr.indexOf('ARC') === 0;
+  }
   return true;
 }
 
@@ -400,7 +405,7 @@ function updateExtentNote() {
   if (cfg.region !== 'arc') { el.textContent = 'Statewide — all 159 Georgia counties'; return; }
   if (S.geo === 'county') el.textContent = "ARC 11-county region, from ARC's own PlanningRegion field";
   else if (S.geo === 'tract') el.textContent = "ARC 11-county region — tracts nested by county FIPS";
-  else el.textContent = 'Statewide — place codes do not nest in counties';
+  else el.textContent = "ARC region — cities carrying ARC's own PlanningRegion value, boundary-straddling places included";
 }
 
 function setApp(a) {
