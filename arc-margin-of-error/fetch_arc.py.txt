@@ -6,7 +6,7 @@ Source: services1.arcgis.com/Ug5xGQbHsD8zuZzM (ArcGIS Online org `opendata@arc`)
 Service: "ACS 2023 Housing Affordability" FeatureServer
 Layers:  11 = County, 9 = City, 21 = Tract
 
-Writes GeoJSON + the field schema to /home/claude/arc_data/.
+Writes GeoJSON + the field schema to ./data/.
 """
 import json
 import os
@@ -16,7 +16,7 @@ import urllib.parse
 
 BASE = ("https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/"
         "ACS%202023%20Housing%20Affordability/FeatureServer")
-OUT = "/home/claude/arc_data"
+OUT = "./data"
 os.makedirs(OUT, exist_ok=True)
 
 LAYERS = {"county": 11, "city": 9, "tract": 21}

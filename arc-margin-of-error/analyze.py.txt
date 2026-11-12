@@ -28,15 +28,15 @@ level is the baseline: larger samples, tighter margins. If the municipal and
 tract findings were an artifact of how the statistic is built, the county level
 would show them too. Reported so the reader can check that.
 
-Input:  /home/claude/arc_data/{county,city,tract}.geojson  (fetched from ARC)
-Output: /home/claude/arc_out/findings.json, plus the per-unit table the app uses
+Input:  ./data/{county,city,tract}.geojson  (fetched from ARC)
+Output: ./out/findings.json, plus the per-unit table the app uses
 """
 import json
 import math
 import os
 
-DATA = "/home/claude/arc_data"
-OUT = "/home/claude/arc_out"
+DATA = "./data"
+OUT = "./out"
 os.makedirs(OUT, exist_ok=True)
 
 Z90 = 1.645  # ACS MOEs are published at 90% confidence
