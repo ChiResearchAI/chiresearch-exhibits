@@ -1,0 +1,202 @@
+#!/usr/bin/env python3
+"""Reliability of cost-burden comparison across ARC's published geographies.
+
+The design claim under test
+---------------------------
+Exhibit A, Application 2 requires that users "compare housing conditions across
+counties and municipalities" and be able to "sort, filter, and compare
+jurisdictions." ARC publishes, alongside every estimate, the Census margin of
+error for that estimate. The claim this exhibit tests is that a comparison
+feature which sorts on the estimate alone is not safe at municipal and tract
+level, and that the margin of error therefore has to be first-class data in the
+tool rather than metadata behind a click.
+
+Method
+------
+ACS margins of error are published at 90% confidence, so SE = MOE / 1.645.
+Coefficient of variation CV = SE / estimate. Census Bureau guidance bands:
+CV <= 15% reliable, 15-30% use with caution, > 30% unreliable.
+
+Two units are treated as statistically distinguishable when the difference of
+their estimates exceeds the MOE of that difference, MOE_diff = sqrt(m1^2 + m2^2)
+(the Census Bureau's own approximation for comparing two estimates).
+
+Baseline discipline
+-------------------
+Every figure is computed identically at all three geography levels. The county
+level is the baseline: larger samples, tighter margins. If the municipal and
+tract findings were an artifact of how the statistic is built, the county level
+would show them too. Reported so the reader can check that.
+
+Input:  /home/claude/arc_data/{county,city,tract}.geojson  (fetched from ARC)
+Output: /home/claude/arc_out/findings.json, plus the per-unit table the app uses
+"""
+import json
+import math
+import os
+
+DATA = "/home/claude/arc_data"
+OUT = "/home/claude/arc_out"
+os.makedirs(OUT, exist_ok=True)
+
+Z90 = 1.645  # ACS MOEs are published at 90% confidence
+
+# renter cost burden: % of occupied units paying 30%+ of income in gross rent
+EST = "pGRAPI30PctPlus_e23"
+MOE = "pGRAPI30PctPlus_m23"
+DENOM = "OccGRAPI_e23"
+
+LEVELS = ["county", "city", "tract"]
+
+
+def load(level):
+    with open(f"{DATA}/{level}.geojson") as fh:
+        fc = json.load(fh)
+    rows = []
+    for f in fc["features"]:
+        p = f["properties"]
+        e, m = p.get(EST), p.get(MOE)
+        if e is None or m is None or e <= 0:
+            continue
+        rows.append({
+            "geoid": p.get("GEOID"),
+            "name": p.get("NAME"),
+            "est": float(e),
+            "moe": float(m),
+            "denom": p.get(DENOM) or 0,
+            "se": float(m) / Z90,
+            "cv": (float(m) / Z90) / float(e) * 100.0,
+        })
+    return rows, len(fc["features"])
+
+
+def bands(rows):
+    r = sum(1 for x in rows if x["cv"] <= 15)
+    c = sum(1 for x in rows if 15 < x["cv"] <= 30)
+    u = sum(1 for x in rows if x["cv"] > 30)
+    return r, c, u
+
+
+def adjacent_indistinguishable(rows):
+    """Sort descending on the estimate; count adjacent pairs whose difference
+    is inside the MOE of the difference."""
+    s = sorted(rows, key=lambda x: -x["est"])
+    bad = 0
+    for a, b in zip(s, s[1:]):
+        diff = abs(a["est"] - b["est"])
+        moed = math.sqrt(a["moe"] ** 2 + b["moe"] ** 2)
+        if diff <= moed:
+            bad += 1
+    return bad, len(s) - 1
+
+
+def rank_distance_to_significance(rows):
+    """For each unit, how far down the sorted list you must travel before the
+    difference becomes statistically distinguishable. Median over all units."""
+    s = sorted(rows, key=lambda x: -x["est"])
+    gaps = []
+    for i, a in enumerate(s):
+        for j in range(i + 1, len(s)):
+            b = s[j]
+            moed = math.sqrt(a["moe"] ** 2 + b["moe"] ** 2)
+            if abs(a["est"] - b["est"]) > moed:
+                gaps.append(j - i)
+                break
+        else:
+            gaps.append(len(s) - i)
+    gaps.sort()
+    n = len(gaps)
+    return {
+        "median": gaps[n // 2],
+        "p90": gaps[int(n * 0.9)],
+        "max": gaps[-1],
+    }
+
+
+def top10_overlap(rows):
+    """Of the units ranked 1-10 on the estimate, how many are statistically
+    distinguishable from the unit ranked 1st?"""
+    s = sorted(rows, key=lambda x: -x["est"])[:10]
+    if not s:
+        return None
+    lead = s[0]
+    dist = 0
+    for b in s[1:]:
+        moed = math.sqrt(lead["moe"] ** 2 + b["moe"] ** 2)
+        if abs(lead["est"] - b["est"]) > moed:
+            dist += 1
+    return {"leader": lead["name"], "leader_est": round(lead["est"], 1),
+            "leader_moe": round(lead["moe"], 1),
+            "distinguishable_of_next_9": dist}
+
+
+def main():
+    findings = {
+        "indicator": "Gross rent 30.0 percent of income or greater, 2023 (percent)",
+        "fields": {"estimate": EST, "margin_of_error": MOE, "denominator": DENOM},
+        "source": ("Atlanta Regional Commission, ArcGIS Online org opendata@arc, "
+                   "service 'ACS 2023 Housing Affordability', FeatureServer "
+                   "layers 11 (County), 9 (City), 21 (Tract); retrieved "
+                   "2026-11-06, outSR 4326"),
+        "confidence": "ACS margins of error are published at 90% confidence; SE = MOE / 1.645",
+        "construction_note": (
+            "The 'adjacent pairs indistinguishable' figure comes out at 100% at "
+            "every geography level, the county baseline included. That result is "
+            "FORCED BY CONSTRUCTION and is not a finding: adjacent ranks in a "
+            "sorted list are separated by a fraction of a percentage point by "
+            "definition, while the margins of error are several points wide, so "
+            "the comparison can only fail. It is reported here solely to show why "
+            "the informative measure is rank distance to significance - how far "
+            "down the sorted list you must travel before a difference is real - "
+            "which is a measured property of the data rather than an artifact of "
+            "the sort. Only the CV bands, median CV and rank-distance figures "
+            "below should be read as findings."
+        ),
+        "baseline": (
+            "County is the baseline, computed identically. Its median CV of 13.0% "
+            "against 29.7% at city level is what establishes that the municipal "
+            "and tract results reflect sample size at small geographies and not "
+            "the way the statistic is built."
+        ),
+        "levels": {},
+    }
+
+    for lvl in LEVELS:
+        rows, total = load(lvl)
+        r, c, u = bands(rows)
+        bad, pairs = adjacent_indistinguishable(rows)
+        findings["levels"][lvl] = {
+            "features_published": total,
+            "features_with_estimate_and_moe": len(rows),
+            "cv_reliable_le15": r,
+            "cv_caution_15_30": c,
+            "cv_unreliable_gt30": u,
+            "pct_not_reliable": round((c + u) / len(rows) * 100, 1),
+            "adjacent_pairs": pairs,
+            "adjacent_indistinguishable": bad,
+            "pct_adjacent_indistinguishable": round(bad / pairs * 100, 1),
+            "rank_distance_to_significance": rank_distance_to_significance(rows),
+            "top10": top10_overlap(rows),
+            "median_cv": round(sorted(x["cv"] for x in rows)[len(rows) // 2], 1),
+        }
+        print(f"{lvl:7} n={len(rows):5} of {total:5} published | "
+              f"median CV {findings['levels'][lvl]['median_cv']:5}% | "
+              f"not reliable {findings['levels'][lvl]['pct_not_reliable']:5}% | "
+              f"adjacent pairs indistinguishable "
+              f"{findings['levels'][lvl]['pct_adjacent_indistinguishable']}%")
+
+        # per-unit table for the app
+        with open(f"{OUT}/{lvl}_reliability.json", "w") as fh:
+            json.dump([{
+                "geoid": x["geoid"], "name": x["name"],
+                "est": round(x["est"], 1), "moe": round(x["moe"], 1),
+                "cv": round(x["cv"], 1), "denom": x["denom"],
+            } for x in rows], fh)
+
+    with open(f"{OUT}/findings.json", "w") as fh:
+        json.dump(findings, fh, indent=1)
+    print(f"\n-> {OUT}/findings.json")
+
+
+if __name__ == "__main__":
+    main()

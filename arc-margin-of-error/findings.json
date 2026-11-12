@@ -1,0 +1,83 @@
+{
+ "indicator": "Gross rent 30.0 percent of income or greater, 2023 (percent)",
+ "fields": {
+  "estimate": "pGRAPI30PctPlus_e23",
+  "margin_of_error": "pGRAPI30PctPlus_m23",
+  "denominator": "OccGRAPI_e23"
+ },
+ "source": "Atlanta Regional Commission, ArcGIS Online org opendata@arc, service 'ACS 2023 Housing Affordability', FeatureServer layers 11 (County), 9 (City), 21 (Tract); retrieved 2026-11-06, outSR 4326",
+ "confidence": "ACS margins of error are published at 90% confidence; SE = MOE / 1.645",
+ "construction_note": "The 'adjacent pairs indistinguishable' figure comes out at 100% at every geography level, the county baseline included. That result is FORCED BY CONSTRUCTION and is not a finding: adjacent ranks in a sorted list are separated by a fraction of a percentage point by definition, while the margins of error are several points wide, so the comparison can only fail. It is reported here solely to show why the informative measure is rank distance to significance - how far down the sorted list you must travel before a difference is real - which is a measured property of the data rather than an artifact of the sort. Only the CV bands, median CV and rank-distance figures below should be read as findings.",
+ "baseline": "County is the baseline, computed identically. Its median CV of 13.0% against 29.7% at city level is what establishes that the municipal and tract results reflect sample size at small geographies and not the way the statistic is built.",
+ "levels": {
+  "county": {
+   "features_published": 159,
+   "features_with_estimate_and_moe": 159,
+   "cv_reliable_le15": 100,
+   "cv_caution_15_30": 52,
+   "cv_unreliable_gt30": 7,
+   "pct_not_reliable": 37.1,
+   "adjacent_pairs": 158,
+   "adjacent_indistinguishable": 158,
+   "pct_adjacent_indistinguishable": 100.0,
+   "rank_distance_to_significance": {
+    "median": 46,
+    "p90": 93,
+    "max": 130
+   },
+   "top10": {
+    "leader": "Hancock County",
+    "leader_est": 75.7,
+    "leader_moe": 19.2,
+    "distinguishable_of_next_9": 0
+   },
+   "median_cv": 13.0
+  },
+  "city": {
+   "features_published": 538,
+   "features_with_estimate_and_moe": 506,
+   "cv_reliable_le15": 111,
+   "cv_caution_15_30": 146,
+   "cv_unreliable_gt30": 249,
+   "pct_not_reliable": 78.1,
+   "adjacent_pairs": 505,
+   "adjacent_indistinguishable": 505,
+   "pct_adjacent_indistinguishable": 100.0,
+   "rank_distance_to_significance": {
+    "median": 146,
+    "p90": 360,
+    "max": 506
+   },
+   "top10": {
+    "leader": "Aldora town",
+    "leader_est": 100.0,
+    "leader_moe": 375.7,
+    "distinguishable_of_next_9": 0
+   },
+   "median_cv": 29.7
+  },
+  "tract": {
+   "features_published": 2796,
+   "features_with_estimate_and_moe": 2673,
+   "cv_reliable_le15": 385,
+   "cv_caution_15_30": 1098,
+   "cv_unreliable_gt30": 1190,
+   "pct_not_reliable": 85.6,
+   "adjacent_pairs": 2672,
+   "adjacent_indistinguishable": 2672,
+   "pct_adjacent_indistinguishable": 100.0,
+   "rank_distance_to_significance": {
+    "median": 775,
+    "p90": 1475,
+    "max": 2673
+   },
+   "top10": {
+    "leader": "Census Tract 9708.01, Baldwin County",
+    "leader_est": 100.0,
+    "leader_moe": 232.5,
+    "distinguishable_of_next_9": 0
+   },
+   "median_cv": 27.3
+  }
+ }
+}

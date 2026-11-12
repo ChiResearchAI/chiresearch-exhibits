@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cost Burden, With Its Margin of Error — a working example on ARC's own data</title>
+<style>
+/* Leaflet 1.9.4 — inlined; the artifact viewer blocks third-party stylesheets */
+/* required styles */
+
+.leaflet-pane,
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-tile-container,
+.leaflet-pane > svg,
+.leaflet-pane > canvas,
+.leaflet-zoom-box,
+.leaflet-image-layer,
+.leaflet-layer {
+	position: absolute;
+	left: 0;
+	top: 0;
+	}
+.leaflet-container {
+	overflow: hidden;
+	}
+.leaflet-tile,
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	-webkit-user-select: none;
+	   -moz-user-select: none;
+	        user-select: none;
+	  -webkit-user-drag: none;
+	}
+/* Prevents IE11 from highlighting tiles in blue */
+.leaflet-tile::selection {
+	background: transparent;
+}
+/* Safari renders non-retina tile on retina better with this, but Chrome is worse */
+.leaflet-safari .leaflet-tile {
+	image-rendering: -webkit-optimize-contrast;
+	}
+/* hack that prevents hw layers "stretching" when loading new tiles */
+.leaflet-safari .leaflet-tile-container {
+	width: 1600px;
+	height: 1600px;
+	-webkit-transform-origin: 0 0;
+	}
+.leaflet-marker-icon,
+.leaflet-marker-shadow {
+	display: block;
+	}
+/* .leaflet-container svg: reset svg max-width decleration shipped in Joomla! (joomla.org) 3.x */
+/* .leaflet-container img: map is broken in FF if you have max-width: 100% on tiles */
+.leaflet-container .leaflet-overlay-pane svg {
+	max-width: none !important;
+	max-height: none !important;
+	}
+.leaflet-container .leaflet-marker-pane img,
+.leaflet-container .leaflet-shadow-pane img,
+.leaflet-container .leaflet-tile-pane img,
+.leaflet-container img.leaflet-image-layer,
+.leaflet-container .leaflet-tile {
+	max-width: none !important;
+	max-height: none !important;
+	width: auto;
+	padding: 0;
+	}
+
+.leaflet-container img.leaflet-tile {
+	/* See: https://bugs.chromium.org/p/chromium/issues/detail?id=600120 */
+	mix-blend-mode: plus-lighter;
+}
+
+.leaflet-container.leaflet-touch-zoom {
+	-ms-touch-action: pan-x pan-y;
+	touch-action: pan-x pan-y;
+	}
+.leaflet-container.leaflet-touch-drag {
+	-ms-touch-action: pinch-zoom;
+	/* Fallback for FF which doesn't support pinch-zoom */
+	touch-action: none;
+	touch-action: pinch-zoom;
+}
+.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom {
+	-ms-touch-action: none;
+	touch-action: none;
+}
+.leaflet-container {
+	-webkit-tap-highlight-color: transparent;
+}
+.leaflet-container a {
+	-webkit-tap-highlight-color: rgba(51, 181, 229, 0.4);
+}
+.leaflet-tile {
+	filter: inherit;
+	visibility: hidden;
+	}
+.leaflet-tile-loaded {
+	visibility: inherit;
+	}
+.leaflet-zoom-box {
+	width: 0;
+	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 800;
+	}
+/* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
+.leaflet-overlay-pane svg {
+	-moz-user-select: none;
+	}
+
+.leaflet-pane         { z-index: 400; }
+
+.leaflet-tile-pane    { z-index: 200; }
+.leaflet-overlay-pane { z-index: 400; }
+.leaflet-shadow-pane  { z-index: 500; }
+.leaflet-marker-pane  { z-index: 600; }
+.leaflet-tooltip-pane   { z-index: 650; }
+.leaflet-popup-pane   { z-index: 700; }
+
+.leaflet-map-pane canvas { z-index: 100; }
+.leaflet-map-pane svg    { z-index: 200; }
+
+.leaflet-vml-shape {
+	width: 1px;
+	height: 1px;
+	}
+.lvml {
+	behavior: url(#default#VML);
+	display: inline-block;
+	position: absolute;
+	}
+
+
+/* control positioning */
+
+.leaflet-control {
+	position: relative;
+	z-index: 800;
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+.leaflet-top,
+.leaflet-bottom {
+	position: absolute;
+	z-index: 1000;
+	pointer-events: none;
+	}
+.leaflet-top {
+	top: 0;
+	}
+.leaflet-right {
+	right: 0;
+	}
+.leaflet-bottom {
+	bottom: 0;
+	}
+.leaflet-left {
+	left: 0;
+	}
+.leaflet-control {
+	float: left;
+	clear: both;
+	}
+.leaflet-right .leaflet-control {
+	float: right;
+	}
+.leaflet-top .leaflet-control {
+	margin-top: 10px;
+	}
+.leaflet-bottom .leaflet-control {
+	margin-bottom: 10px;
+	}
+.leaflet-left .leaflet-control {
+	margin-left: 10px;
+	}
+.leaflet-right .leaflet-control {
+	margin-right: 10px;
+	}
+
+
+/* zoom and fade animations */
+
+.leaflet-fade-anim .leaflet-popup {
+	opacity: 0;
+	-webkit-transition: opacity 0.2s linear;
+	   -moz-transition: opacity 0.2s linear;
+	        transition: opacity 0.2s linear;
+	}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup {
+	opacity: 1;
+	}
+.leaflet-zoom-animated {
+	-webkit-transform-origin: 0 0;
+	    -ms-transform-origin: 0 0;
+	        transform-origin: 0 0;
+	}
+svg.leaflet-zoom-animated {
+	will-change: transform;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+	-webkit-transition: -webkit-transform 0.25s cubic-bezier(0,0,0.25,1);
+	   -moz-transition:    -moz-transform 0.25s cubic-bezier(0,0,0.25,1);
+	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
+	}
+.leaflet-zoom-anim .leaflet-tile,
+.leaflet-pan-anim .leaflet-tile {
+	-webkit-transition: none;
+	   -moz-transition: none;
+	        transition: none;
+	}
+
+.leaflet-zoom-anim .leaflet-zoom-hide {
+	visibility: hidden;
+	}
+
+
+/* cursors */
+
+.leaflet-interactive {
+	cursor: pointer;
+	}
+.leaflet-grab {
+	cursor: -webkit-grab;
+	cursor:    -moz-grab;
+	cursor:         grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-interactive {
+	cursor: crosshair;
+	}
+.leaflet-popup-pane,
+.leaflet-control {
+	cursor: auto;
+	}
+.leaflet-dragging .leaflet-grab,
+.leaflet-dragging .leaflet-grab .leaflet-interactive,
+.leaflet-dragging .leaflet-marker-draggable {
+	cursor: move;
+	cursor: -webkit-grabbing;
+	cursor:    -moz-grabbing;
+	cursor:         grabbing;
+	}
+
+/* marker & overlays interactivity */
+.leaflet-marker-icon,
+.leaflet-marker-shadow,
+.leaflet-image-layer,
+.leaflet-pane > svg path,
+.leaflet-tile-container {
+	pointer-events: none;
+	}
+
+.leaflet-marker-icon.leaflet-interactive,
+.leaflet-image-layer.leaflet-interactive,
+.leaflet-pane > svg path.leaflet-interactive,
+svg.leaflet-image-layer.leaflet-interactive path {
+	pointer-events: visiblePainted; /* IE 9-10 doesn't have auto */
+	pointer-events: auto;
+	}
+
+/* visual tweaks */
+
+.leaflet-container {
+	background: #ddd;
+	outline-offset: 1px;
+	}
+.leaflet-container a {
+	color: #0078A8;
+	}
+.leaflet-zoom-box {
+	border: 2px dotted #38f;
+	background: rgba(255,255,255,0.5);
+	}
+
+
+/* general typography */
+.leaflet-container {
+	font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-size: 0.75rem;
+	line-height: 1.5;
+	}
+
+
+/* general toolbar styles */
+
+.leaflet-bar {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.65);
+	border-radius: 4px;
+	}
+.leaflet-bar a {
+	background-color: #fff;
+	border-bottom: 1px solid #ccc;
+	width: 26px;
+	height: 26px;
+	line-height: 26px;
+	display: block;
+	text-align: center;
+	text-decoration: none;
+	color: black;
+	}
+.leaflet-bar a,
+.leaflet-control-layers-toggle {
+	background-position: 50% 50%;
+	background-repeat: no-repeat;
+	display: block;
+	}
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+	background-color: #f4f4f4;
+	}
+.leaflet-bar a:first-child {
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	}
+.leaflet-bar a:last-child {
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom: none;
+	}
+.leaflet-bar a.leaflet-disabled {
+	cursor: default;
+	background-color: #f4f4f4;
+	color: #bbb;
+	}
+
+.leaflet-touch .leaflet-bar a {
+	width: 30px;
+	height: 30px;
+	line-height: 30px;
+	}
+.leaflet-touch .leaflet-bar a:first-child {
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
+	}
+.leaflet-touch .leaflet-bar a:last-child {
+	border-bottom-left-radius: 2px;
+	border-bottom-right-radius: 2px;
+	}
+
+/* zoom control */
+
+.leaflet-control-zoom-in,
+.leaflet-control-zoom-out {
+	font: bold 18px 'Lucida Console', Monaco, monospace;
+	text-indent: 1px;
+	}
+
+.leaflet-touch .leaflet-control-zoom-in, .leaflet-touch .leaflet-control-zoom-out  {
+	font-size: 22px;
+	}
+
+
+/* layers control */
+
+.leaflet-control-layers {
+	box-shadow: 0 1px 5px rgba(0,0,0,0.4);
+	background: #fff;
+	border-radius: 5px;
+	}
+.leaflet-control-layers-toggle {
+	background-image: url(images/layers.png);
+	width: 36px;
+	height: 36px;
+	}
+.leaflet-retina .leaflet-control-layers-toggle {
+	background-image: url(images/layers-2x.png);
+	background-size: 26px 26px;
+	}
+.leaflet-touch .leaflet-control-layers-toggle {
+	width: 44px;
+	height: 44px;
+	}
+.leaflet-control-layers .leaflet-control-layers-list,
+.leaflet-control-layers-expanded .leaflet-control-layers-toggle {
+	display: none;
+	}
+.leaflet-control-layers-expanded .leaflet-control-layers-list {
+	display: block;
+	position: relative;
+	}
+.leaflet-control-layers-expanded {
+	padding: 6px 10px 6px 6px;
+	color: #333;
+	background: #fff;
+	}
+.leaflet-control-layers-scrollbar {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	padding-right: 5px;
+	}
+.leaflet-control-layers-selector {
+	margin-top: 2px;
+	position: relative;
+	top: 1px;
+	}
+.leaflet-control-layers label {
+	display: block;
+	font-size: 13px;
+	font-size: 1.08333em;
+	}
+.leaflet-control-layers-separator {
+	height: 0;
+	border-top: 1px solid #ddd;
+	margin: 5px -10px 5px -6px;
+	}
+
+/* Default icon URLs */
+.leaflet-default-icon-path { /* used only in path-guessing heuristic, see L.Icon.Default */
+	background-image: url(images/marker-icon.png);
+	}
+
+
+/* attribution and scale controls */
+
+.leaflet-container .leaflet-control-attribution {
+	background: #fff;
+	background: rgba(255, 255, 255, 0.8);
+	margin: 0;
+	}
+.leaflet-control-attribution,
+.leaflet-control-scale-line {
+	padding: 0 5px;
+	color: #333;
+	line-height: 1.4;
+	}
+.leaflet-control-attribution a {
+	text-decoration: none;
+	}
+.leaflet-control-attribution a:hover,
+.leaflet-control-attribution a:focus {
+	text-decoration: underline;
+	}
+.leaflet-attribution-flag {
+	display: inline !important;
+	vertical-align: baseline !important;
+	width: 1em;
+	height: 0.6669em;
+	}
+.leaflet-left .leaflet-control-scale {
+	margin-left: 5px;
+	}
+.leaflet-bottom .leaflet-control-scale {
+	margin-bottom: 5px;
+	}
+.leaflet-control-scale-line {
+	border: 2px solid #777;
+	border-top: none;
+	line-height: 1.1;
+	padding: 2px 5px 1px;
+	white-space: nowrap;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	background: rgba(255, 255, 255, 0.8);
+	text-shadow: 1px 1px #fff;
+	}
+.leaflet-control-scale-line:not(:first-child) {
+	border-top: 2px solid #777;
+	border-bottom: none;
+	margin-top: -2px;
+	}
+.leaflet-control-scale-line:not(:first-child):not(:last-child) {
+	border-bottom: 2px solid #777;
+	}
+
+.leaflet-touch .leaflet-control-attribution,
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	box-shadow: none;
+	}
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-bar {
+	border: 2px solid rgba(0,0,0,0.2);
+	background-clip: padding-box;
+	}
+
+
+/* popup */
+
+.leaflet-popup {
+	position: absolute;
+	text-align: center;
+	margin-bottom: 20px;
+	}
+.leaflet-popup-content-wrapper {
+	padding: 1px;
+	text-align: left;
+	border-radius: 12px;
+	}
+.leaflet-popup-content {
+	margin: 13px 24px 13px 20px;
+	line-height: 1.3;
+	font-size: 13px;
+	font-size: 1.08333em;
+	min-height: 1px;
+	}
+.leaflet-popup-content p {
+	margin: 17px 0;
+	margin: 1.3em 0;
+	}
+.leaflet-popup-tip-container {
+	width: 40px;
+	height: 20px;
+	position: absolute;
+	left: 50%;
+	margin-top: -1px;
+	margin-left: -20px;
+	overflow: hidden;
+	pointer-events: none;
+	}
+.leaflet-popup-tip {
+	width: 17px;
+	height: 17px;
+	padding: 1px;
+
+	margin: -10px auto 0;
+	pointer-events: auto;
+
+	-webkit-transform: rotate(45deg);
+	   -moz-transform: rotate(45deg);
+	    -ms-transform: rotate(45deg);
+	        transform: rotate(45deg);
+	}
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+	background: white;
+	color: #333;
+	box-shadow: 0 3px 14px rgba(0,0,0,0.4);
+	}
+.leaflet-container a.leaflet-popup-close-button {
+	position: absolute;
+	top: 0;
+	right: 0;
+	border: none;
+	text-align: center;
+	width: 24px;
+	height: 24px;
+	font: 16px/24px Tahoma, Verdana, sans-serif;
+	color: #757575;
+	text-decoration: none;
+	background: transparent;
+	}
+.leaflet-container a.leaflet-popup-close-button:hover,
+.leaflet-container a.leaflet-popup-close-button:focus {
+	color: #585858;
+	}
+.leaflet-popup-scrolled {
+	overflow: auto;
+	}
+
+.leaflet-oldie .leaflet-popup-content-wrapper {
+	-ms-zoom: 1;
+	}
+.leaflet-oldie .leaflet-popup-tip {
+	width: 24px;
+	margin: 0 auto;
+
+	-ms-filter: "progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678)";
+	filter: progid:DXImageTransform.Microsoft.Matrix(M11=0.70710678, M12=0.70710678, M21=-0.70710678, M22=0.70710678);
+	}
+
+.leaflet-oldie .leaflet-control-zoom,
+.leaflet-oldie .leaflet-control-layers,
+.leaflet-oldie .leaflet-popup-content-wrapper,
+.leaflet-oldie .leaflet-popup-tip {
+	border: 1px solid #999;
+	}
+
+
+/* div icon */
+
+.leaflet-div-icon {
+	background: #fff;
+	border: 1px solid #666;
+	}
+
+
+/* Tooltip */
+/* Base styles for the element that has a tooltip */
+.leaflet-tooltip {
+	position: absolute;
+	padding: 6px;
+	background-color: #fff;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	color: #222;
+	white-space: nowrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	pointer-events: none;
+	box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+	}
+.leaflet-tooltip.leaflet-interactive {
+	cursor: pointer;
+	pointer-events: auto;
+	}
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	position: absolute;
+	pointer-events: none;
+	border: 6px solid transparent;
+	background: transparent;
+	content: "";
+	}
+
+/* Directions */
+
+.leaflet-tooltip-bottom {
+	margin-top: 6px;
+}
+.leaflet-tooltip-top {
+	margin-top: -6px;
+}
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-top:before {
+	left: 50%;
+	margin-left: -6px;
+	}
+.leaflet-tooltip-top:before {
+	bottom: 0;
+	margin-bottom: -12px;
+	border-top-color: #fff;
+	}
+.leaflet-tooltip-bottom:before {
+	top: 0;
+	margin-top: -12px;
+	margin-left: -6px;
+	border-bottom-color: #fff;
+	}
+.leaflet-tooltip-left {
+	margin-left: -6px;
+}
+.leaflet-tooltip-right {
+	margin-left: 6px;
+}
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+	top: 50%;
+	margin-top: -6px;
+	}
+.leaflet-tooltip-left:before {
+	right: 0;
+	margin-right: -12px;
+	border-left-color: #fff;
+	}
+.leaflet-tooltip-right:before {
+	left: 0;
+	margin-left: -12px;
+	border-right-color: #fff;
+	}
+
+/* Printing */
+
+@media print {
+	/* Prevent printers from removing background-images of controls. */
+	.leaflet-control {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+		}
+	}
+
+</style>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-1:#fcfcfb; --surface-2:#f4f3f0; --surface-3:#e9e8e3;
+    --text-primary:#0b0b0b; --text-secondary:#52514e; --text-muted:#78766f;
+    --rule:#dcdbd5;
+    --seq-1:#cde2fb; --seq-2:#9ec5f4; --seq-3:#6da7ec; --seq-4:#3987e5;
+    --seq-5:#256abf; --seq-6:#184f95; --seq-7:#0d366b;
+    --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
+    --accent:#2a78d6; --nodata:#cfcec8;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:where(:not([data-theme="light"])){
+      color-scheme: dark;
+      --surface-1:#1a1a19; --surface-2:#232322; --surface-3:#2e2e2c;
+      --text-primary:#f0efec; --text-secondary:#c3c2b7; --text-muted:#908e85;
+      --rule:#383835;
+      --seq-1:#0d366b; --seq-2:#184f95; --seq-3:#256abf; --seq-4:#3987e5;
+      --seq-5:#6da7ec; --seq-6:#9ec5f4; --seq-7:#cde2fb;
+      --accent:#3987e5; --nodata:#4a4a46;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--surface-1); color:var(--text-primary);
+    font:15px/1.5 ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  .wrap{max-width:1280px;margin:0 auto;padding:28px 22px 64px}
+  header{border-bottom:1px solid var(--rule);padding-bottom:18px;margin-bottom:22px}
+  h1{font-size:25px;line-height:1.25;margin:0 0 8px;letter-spacing:-.01em}
+  .byline{color:var(--text-secondary);font-size:13.5px;margin:0}
+  .disclose{
+    margin:16px 0 0;padding:11px 13px;background:var(--surface-2);
+    border-left:3px solid var(--accent);font-size:13px;color:var(--text-secondary)
+  }
+  h2{font-size:17px;margin:34px 0 10px;letter-spacing:-.005em}
+  h3{font-size:13px;margin:0 0 9px;text-transform:uppercase;
+     letter-spacing:.055em;color:var(--text-muted);font-weight:600}
+  p{margin:0 0 11px;max-width:74ch}
+  .lede{font-size:16px}
+  .muted{color:var(--text-secondary)}
+  code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;
+       background:var(--surface-2);padding:1px 4px;border-radius:3px}
+
+  /* findings */
+  .figs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0 6px}
+  .fig{background:var(--surface-2);border:1px solid var(--rule);
+       border-radius:7px;padding:14px 15px}
+  .fig .n{font-size:28px;font-weight:650;letter-spacing:-.02em;line-height:1.1}
+  .fig .l{font-size:12.5px;color:var(--text-secondary);margin-top:5px}
+  .fig .s{font-size:11.5px;color:var(--text-muted);margin-top:7px}
+
+  /* controls */
+  .filters{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;
+           padding:13px 15px;background:var(--surface-2);
+           border:1px solid var(--rule);border-radius:7px;margin:0 0 14px}
+  .f label{display:block;font-size:11.5px;text-transform:uppercase;
+           letter-spacing:.05em;color:var(--text-muted);margin-bottom:4px;font-weight:600}
+  select,button{font:inherit;font-size:13.5px;padding:6px 9px;
+    background:var(--surface-1);color:var(--text-primary);
+    border:1px solid var(--rule);border-radius:5px}
+  button{cursor:pointer}
+  button:hover{background:var(--surface-3)}
+  button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .chk{display:flex;align-items:center;gap:7px;font-size:13.5px;cursor:pointer}
+
+  /* layout */
+  .grid{display:grid;grid-template-columns:1.45fr 1fr;gap:16px;align-items:start}
+  @media (max-width:900px){.grid{grid-template-columns:1fr}.figs{grid-template-columns:1fr}}
+  .panel{background:var(--surface-1);border:1px solid var(--rule);
+         border-radius:7px;padding:14px 15px}
+  #map{height:496px;border-radius:6px;background:var(--surface-2)}
+  .leaflet-container{font:inherit;background:var(--surface-2)}
+
+  /* legend */
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:11px;font-size:12.5px}
+  .lg{display:flex;align-items:center;gap:6px}
+  .sw{width:15px;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,.14)}
+  .relkey{display:flex;gap:16px;flex-wrap:wrap;margin-top:9px;font-size:12.5px}
+  .relkey span{display:flex;align-items:center;gap:6px}
+  .gly{font-size:14px;line-height:1;width:14px;text-align:center}
+
+  /* charts */
+  #scatter,#hist{display:block;width:100%;overflow:visible}
+  .ax line,.ax path{stroke:var(--rule);stroke-width:1}
+  .ax text{fill:var(--text-muted);font-size:10.5px}
+  .axlab{fill:var(--text-secondary);font-size:11.5px}
+  .grid-l{stroke:var(--rule);stroke-width:1;stroke-dasharray:2 3;opacity:.65}
+  .bar{fill:var(--seq-4)}
+  .bar.dim{fill:var(--seq-2);opacity:.5}
+  .bar:hover{fill:var(--seq-6)}
+  .dot{stroke:var(--surface-1);stroke-width:1}
+  .dot.sel{stroke:var(--text-primary);stroke-width:2}
+
+  /* table */
+  .tblwrap{max-height:330px;overflow:auto;border:1px solid var(--rule);border-radius:6px}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th{position:sticky;top:0;background:var(--surface-3);text-align:left;
+     padding:7px 9px;font-size:11.5px;text-transform:uppercase;
+     letter-spacing:.04em;color:var(--text-secondary);cursor:pointer;
+     white-space:nowrap;border-bottom:1px solid var(--rule)}
+  th:hover{color:var(--text-primary)}
+  td{padding:6px 9px;border-bottom:1px solid var(--rule)}
+  tbody tr{cursor:pointer}
+  tbody tr:hover{background:var(--surface-2)}
+  tbody tr.sel{background:var(--surface-3)}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+
+  .tip{position:absolute;pointer-events:none;z-index:9999;
+    background:var(--surface-1);border:1px solid var(--rule);border-radius:6px;
+    padding:8px 10px;font-size:12.5px;box-shadow:0 3px 14px rgba(0,0,0,.17);
+    max-width:270px;opacity:0;transition:opacity .09s}
+  .tip b{display:block;margin-bottom:3px}
+  .tip .r{color:var(--text-secondary)}
+  footer{margin-top:40px;padding-top:16px;border-top:1px solid var(--rule);
+         font-size:12.5px;color:var(--text-muted)}
+  ul{max-width:74ch;padding-left:20px}
+  li{margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>Cost burden, with its margin of error</h1>
+  <p class="byline">A working example built on the Atlanta Regional Commission's own published data ·
+     ChiResearch Technologies, LLC · 6 November 2026</p>
+  <p class="disclose"><strong>What this is.</strong> A working demonstration, not deployed production
+     software and not an ARC product. It runs on ARC's own public ArcGIS Online service — org
+     <code>opendata@arc</code>, service <code>ACS 2023 Housing Affordability</code>, FeatureServer
+     layers 11 (County), 9 (City) and 21 (Tract), retrieved 6 November 2026. Every figure below is
+     computed from fields ARC publishes; nothing is modelled, imputed or simulated. The analysis is
+     reproducible from the source service with the two scripts linked at the foot of this page.</p>
+</header>
+
+<p class="lede">Exhibit A asks that the Regional Housing Dashboard let users
+   &ldquo;compare housing conditions across counties and municipalities&rdquo; and
+   &ldquo;sort, filter, and compare jurisdictions.&rdquo; ARC already publishes, beside every
+   estimate, the Census margin of error for that estimate. This exhibit tests one claim our
+   approach rests on: <strong>that a comparison built on the estimate alone is not safe below
+   county level, and that the margin of error therefore has to be first-class data in the
+   application rather than metadata behind a click.</strong></p>
+
+<h2>What the data says</h2>
+
+<div class="figs">
+  <div class="fig">
+    <div class="n" id="f1">—</div>
+    <div class="l">of Georgia <strong>cities</strong> publish a renter cost-burden estimate whose
+        coefficient of variation exceeds 15%</div>
+    <div class="s">Against <strong id="f1b">—</strong> of counties, computed identically.
+        The county baseline is what shows this reflects sample size at small geographies,
+        not the way the statistic is built.</div>
+  </div>
+  <div class="fig">
+    <div class="n" id="f2">—</div>
+    <div class="l">median rank positions you must travel down a sorted list of cities before
+        the difference from a given city is statistically distinguishable</div>
+    <div class="s">46 of 159 at county level, 775 of 2,673 at tract level. A sorted comparison
+        table invites a reading the data cannot support.</div>
+  </div>
+  <div class="fig">
+    <div class="n" id="f3">—</div>
+    <div class="l">geographies ARC publishes with no usable estimate and margin-of-error pair
+        at all, across the three levels</div>
+    <div class="s">&ldquo;No reliable estimate&rdquo; is a state the interface has to render,
+        not a blank cell.</div>
+  </div>
+</div>
+
+<p class="muted" style="font-size:13px"><strong>One measure reported and then set aside.</strong>
+   At every level — county baseline included — 100% of <em>adjacent</em> pairs in the sorted list are
+   statistically indistinguishable. That result is forced by construction and is not a finding:
+   adjacent ranks differ by a fraction of a point by definition while the margins are several points
+   wide, so the comparison can only fail. It is named here because the informative version of the
+   same question is rank <em>distance</em> to significance, which is a measured property of the data
+   rather than an artifact of sorting. Only the coefficient-of-variation bands, the median CV and the
+   rank-distance figures should be read as findings.</p>
+
+<h2>The application</h2>
+<p class="muted">Pick a geography and an indicator. The map, the scatterplot, the distribution and the
+   table are one selection: hover or click anywhere and the same geography highlights everywhere.
+   Turn on <em>Flag unreliable estimates</em> to see what the comparison looks like once the margin
+   of error is allowed to speak.</p>
+
+<div class="filters">
+  <div class="f">
+    <label for="lvl">Geography</label>
+    <select id="lvl">
+      <option value="county" selected>County (159)</option>
+      <option value="city">City / town (538)</option>
+      <option value="tract">Census tract (2,796)</option>
+    </select>
+  </div>
+  <div class="f">
+    <label for="ind">Indicator</label>
+    <select id="ind">
+      <option value="rent">Gross rent 30%+ of income (renters)</option>
+      <option value="own">Owner costs 30%+ of income (with mortgage)</option>
+    </select>
+  </div>
+  <div class="f">
+    <label for="bin">Binning</label>
+    <select id="bin">
+      <option value="quantile" selected>Quantile (5)</option>
+      <option value="equal">Equal interval (5)</option>
+      <option value="stddev">Standard deviation</option>
+    </select>
+  </div>
+  <div class="f">
+    <label>&nbsp;</label>
+    <label class="chk"><input type="checkbox" id="flag" checked> Flag unreliable estimates</label>
+  </div>
+  <div class="f">
+    <label>&nbsp;</label>
+    <button id="csv">Export CSV</button>
+  </div>
+  <div class="f" style="margin-left:auto">
+    <label>Selected</label>
+    <div id="selname" style="font-size:13.5px;max-width:230px">— none —</div>
+  </div>
+</div>
+
+<div class="grid">
+  <div class="panel">
+    <h3>Map</h3>
+    <div id="map"></div>
+    <p class="muted" style="font-size:12px;margin:9px 0 0">No basemap tiles: the geographies are
+       the map here, and an exhibit should not depend on a third-party tile key to render.
+       Selectable basemaps and aerial imagery are a product requirement (Exhibit A, Application 1)
+       and belong in the build, not in a demonstration.</p>
+    <div class="legend" id="legend"></div>
+    <div class="relkey" id="relkey"></div>
+  </div>
+
+  <div>
+    <div class="panel" style="margin-bottom:16px">
+      <h3>Estimate against its margin of error</h3>
+      <svg id="scatter" viewBox="0 0 430 268" role="img"
+           aria-label="Scatterplot of each geography's cost-burden estimate against the width of its margin of error"></svg>
+      <p class="muted" style="font-size:12px;margin:8px 0 0">
+        Each mark is one geography. Marks toward the top carry margins as wide as the
+        regional spread of the indicator itself. The axis is capped at ±60 points so the body of
+        the distribution stays readable; anything wider is drawn on the dashed line and counted
+        there. Hover to read a value; click to hold a selection.</p>
+    </div>
+    <div class="panel">
+      <h3>Distribution of the estimate</h3>
+      <svg id="hist" viewBox="0 0 430 186" role="img"
+           aria-label="Histogram of the cost-burden estimate across the selected geography level"></svg>
+      <p class="muted" style="font-size:12px;margin:8px 0 0">
+        Click a bar to filter the map and table to that range; click it again to clear.</p>
+    </div>
+  </div>
+</div>
+
+<h2>Table view</h2>
+<p class="muted">The authoritative view, because colour alone never carries the reliability band.
+   Click a column to sort; click a row to select it on the map.</p>
+<div class="tblwrap">
+  <table id="tbl">
+    <thead><tr>
+      <th data-k="name">Geography</th>
+      <th data-k="est" class="num">Estimate %</th>
+      <th data-k="moe" class="num">± MOE</th>
+      <th data-k="cv"  class="num">CV %</th>
+      <th data-k="rel">Reliability</th>
+      <th data-k="denom" class="num">Units in base</th>
+    </tr></thead>
+    <tbody></tbody>
+  </table>
+</div>
+<p class="muted" style="font-size:12.5px;margin-top:9px" id="tblnote"></p>
+
+<h2>What this means for the build</h2>
+<ul>
+  <li><strong>Margin of error travels with the estimate everywhere.</strong> It is a column in the
+      indicator model, not a metadata panel — because the comparison feature Exhibit A asks for is
+      the feature most exposed to it.</li>
+  <li><strong>Reliability is a rendered state with three bands and a glyph</strong>, so the signal
+      survives colour-vision deficiency, greyscale printing and forced-colours mode. Red and green
+      at these steps are 4.1 ΔE apart under deuteranopia, which is why the band is always written
+      as well as shaded.</li>
+  <li><strong>Sorting on an unreliable estimate is a design decision, not a default.</strong> A
+      ranked municipal table is offered with the reliability column beside it and the option to
+      exclude estimates that cannot support a rank.</li>
+  <li><strong>&ldquo;No reliable estimate&rdquo; is a first-class value.</strong> 155 of the
+      geographies ARC publishes across these three levels carry no usable estimate and
+      margin-of-error pair; the interface says so rather than showing an empty cell.</li>
+  <li><strong>Vintages overlap in the live catalogue.</strong> ARC's own org currently publishes 33
+      services for 2020, 32 for 2021, 26 for 2022 and 7 for 2023 — the partially-rolled-out
+      condition that makes &ldquo;add a new vintage, retire the old one&rdquo; (Q&amp;A 147, 170) a
+      first-order administrative workflow rather than a convenience.</li>
+</ul>
+
+<h2>What this exhibit cannot tell you</h2>
+<ul class="muted">
+  <li>It covers one indicator family — housing cost burden — from one vintage, ACS 2023 five-year.
+      Other indicators in ARC's catalogue will have different reliability profiles.</li>
+  <li>It uses ARC's published percentages and margins as given. It does not re-derive them from
+      Census microdata, and it does not audit ARC's own aggregation.</li>
+  <li>The coefficient-of-variation bands (15% / 30%) are the Census Bureau's conventional
+      thresholds. They are a convention, not a law; a different threshold moves the counts.</li>
+  <li>Rank distance to significance is computed pairwise on the published margins using the
+      Bureau's own approximation for comparing two estimates. It assumes independence between
+      geographies, which is an approximation at tract level.</li>
+  <li>Geometry is simplified for display only. Every statistic is computed from attributes, never
+      from geometry.</li>
+  <li>It demonstrates a method and an interface. It is not evidence that ChiResearch has delivered
+      a production system of this kind for a public agency.</li>
+</ul>
+
+<footer>
+  <strong>Source.</strong> Atlanta Regional Commission, ArcGIS Online org <code>opendata@arc</code>,
+  service <code>ACS 2023 Housing Affordability</code>, FeatureServer layers 11, 9 and 21, queried
+  <code>outSR=4326</code> with <code>resultOffset</code> paging, retrieved 6 November 2026.
+  Margins of error are published at 90% confidence; standard error = MOE ÷ 1.645.
+  Reproducible with <a href="fetch_arc.py.txt"><code>fetch_arc.py</code></a> and <a href="analyze.py.txt"><code>analyze.py</code></a>, served with this exhibit; the measured figures are in <a href="findings.json"><code>findings.json</code></a>.
+  <br><br>
+  ChiResearch Technologies, LLC · Hyattsville, MD · wilfred@chiresearchai.com
+</footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script src="leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+const SEQ=['--seq-1','--seq-2','--seq-3','--seq-4','--seq-5','--seq-6','--seq-7'];
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const RAMP=()=>['--seq-2','--seq-3','--seq-4','--seq-5','--seq-7'].map(cssv);
+const BAND=[
+  {k:'reliable',  lab:'Reliable (CV ≤ 15%)',        gly:'●', col:()=>cssv('--good')},
+  {k:'caution',   lab:'Use with caution (15–30%)',  gly:'◐', col:()=>cssv('--warning')},
+  {k:'unreliable',lab:'Unreliable (CV > 30%)',      gly:'○', col:()=>cssv('--critical')},
+  {k:'none',      lab:'No reliable estimate',       gly:'×', col:()=>cssv('--nodata')}
+];
+const bandOf=cv=> cv==null?BAND[3] : cv<=15?BAND[0] : cv<=30?BAND[1] : BAND[2];
+
+const IND={
+  rent:{e:'pGRAPI30PctPlus_e23', m:'pGRAPI30PctPlus_m23', d:'OccGRAPI_e23',
+        lab:'Gross rent 30%+ of income'},
+  own: {e:'pMSMOCAPI30PctPlus_e23', m:'pMSMOCAPI30PctPlus_m23', d:'OccGRAPI_e23',
+        lab:'Owner costs 30%+ of income (with mortgage)'}
+};
+
+const state={lvl:'county', ind:'rent', bin:'quantile', flag:true,
+             sel:null, histFilter:null, sortK:'est', sortDir:-1};
+const cache={}; let rows=[], breaks=[], layer=null;
+const tip=document.getElementById('tip');
+
+const map=L.map('map',{scrollWheelZoom:true}).setView([32.9,-83.4],7);
+map.attributionControl.addAttribution(
+  'Geography: Atlanta Regional Commission, ACS 2023 Housing Affordability');
+
+function showTip(html,ev){
+  tip.innerHTML=html; tip.style.opacity=1;
+  const p=12, w=tip.offsetWidth, h=tip.offsetHeight;
+  let x=ev.clientX+p, y=ev.clientY+p;
+  if(x+w>innerWidth-8) x=ev.clientX-w-p;
+  if(y+h>innerHeight-8) y=ev.clientY-h-p;
+  tip.style.left=(x+scrollX)+'px'; tip.style.top=(y+scrollY)+'px';
+}
+const hideTip=()=>{tip.style.opacity=0};
+
+async function load(lvl){
+  if(cache[lvl]) return cache[lvl];
+  const r=await fetch(lvl+'.json');
+  cache[lvl]=await r.json();
+  return cache[lvl];
+}
+
+function build(fc){
+  const I=IND[state.ind];
+  rows=fc.features.map(f=>{
+    const p=f.properties, e=p[I.e], m=p[I.m];
+    const ok = e!=null && m!=null && e>0;
+    const cv = ok ? +(((m/1.645)/e)*100).toFixed(1) : null;
+    return {geoid:p.GEOID, name:p.NAME||'(unnamed)',
+            est: e==null?null:+e.toFixed(1), moe: m==null?null:+m.toFixed(1),
+            cv, denom:p[I.d]||0, f};
+  });
+}
+
+function computeBreaks(){
+  const v=rows.filter(r=>r.est!=null).map(r=>r.est).sort((a,b)=>a-b);
+  if(!v.length){breaks=[];return}
+  if(state.bin==='quantile'){
+    breaks=[.2,.4,.6,.8].map(q=>v[Math.floor(q*(v.length-1))]);
+  }else if(state.bin==='equal'){
+    const lo=v[0],hi=v[v.length-1],s=(hi-lo)/5;
+    breaks=[1,2,3,4].map(i=>+(lo+s*i).toFixed(1));
+  }else{
+    const mu=v.reduce((a,b)=>a+b,0)/v.length;
+    const sd=Math.sqrt(v.reduce((a,b)=>a+(b-mu)**2,0)/v.length);
+    breaks=[-1.5,-.5,.5,1.5].map(z=>+(mu+z*sd).toFixed(1));
+  }
+}
+const binOf=v=>{let i=0; while(i<breaks.length && v>breaks[i]) i++; return i};
+
+function visible(r){
+  if(state.histFilter){
+    const [a,b]=state.histFilter;
+    if(r.est==null || r.est<a || r.est>=b) return false;
+  }
+  return true;
+}
+
+function styleFor(r){
+  const ramp=RAMP();
+  if(r.est==null) return {fillColor:cssv('--nodata'),fillOpacity:.5,
+                          color:cssv('--rule'),weight:.5};
+  const dim=!visible(r);
+  const band=bandOf(r.cv);
+  const unrel=state.flag && (band.k==='unreliable');
+  return {
+    fillColor: unrel ? cssv('--nodata') : ramp[binOf(r.est)],
+    fillOpacity: dim?.12 : (unrel?.45:.84),
+    color: r.geoid===state.sel ? cssv('--text-primary')
+         : (unrel ? cssv('--text-muted') : ramp[Math.min(4,binOf(r.est)+1)]),
+    weight: r.geoid===state.sel ? 2.5 : (state.lvl==='county' ? .7 : 1.1),
+    dashArray: unrel ? '2 2' : null
+  };
+}
+
+function rowTip(r){
+  const b=bandOf(r.cv);
+  if(r.est==null) return `<b>${r.name}</b><span class="r">No reliable estimate published</span>`;
+  return `<b>${r.name}</b>
+    ${IND[state.ind].lab}<br>
+    <strong>${r.est}%</strong> ± ${r.moe} (90% CI)<br>
+    <span class="r">CV ${r.cv}% · <span style="color:${b.col()}">${b.gly}</span> ${b.lab}<br>
+    ${r.denom.toLocaleString()} units in the base</span>`;
+}
+
+let refLayer=null;
+async function drawRef(){
+  if(refLayer){refLayer.remove(); refLayer=null}
+  if(state.lvl==='county') return;
+  const cf=await load('county');
+  refLayer=L.geoJSON(cf,{interactive:false,style:{
+    fill:false, color:cssv('--text-muted'), weight:.8, opacity:.55}}).addTo(map);
+  refLayer.bringToBack();
+}
+
+function drawMap(fc){
+  if(layer) layer.remove();
+  const byId={}; rows.forEach(r=>byId[r.geoid]=r);
+  layer=L.geoJSON(fc,{
+    style:f=>styleFor(byId[f.properties.GEOID]),
+    onEachFeature:(f,lyr)=>{
+      const r=byId[f.properties.GEOID];
+      lyr.on('mouseover',e=>{showTip(rowTip(r),e.originalEvent);
+                             lyr.setStyle({weight:2,color:cssv('--text-primary')})});
+      lyr.on('mousemove',e=>showTip(rowTip(r),e.originalEvent));
+      lyr.on('mouseout',()=>{hideTip(); lyr.setStyle(styleFor(r))});
+      lyr.on('click',()=>select(r.geoid));
+    }
+  }).addTo(map);
+  map.invalidateSize(false);
+  requestAnimationFrame(()=>{
+    map.invalidateSize(false);
+    try{ map.fitBounds(layer.getBounds(),{padding:[10,10]}) }catch(e){}
+  });
+}
+
+function drawLegend(){
+  const ramp=RAMP(), lo=rows.filter(r=>r.est!=null).map(r=>r.est);
+  const mn=Math.min(...lo), mx=Math.max(...lo);
+  const edges=[mn,...breaks,mx];
+  document.getElementById('legend').innerHTML =
+    `<span class="muted" style="font-size:12px">${IND[state.ind].lab} —</span>` +
+    ramp.map((c,i)=>`<span class="lg"><span class="sw" style="background:${c}"></span>
+      ${edges[i].toFixed(0)}–${edges[i+1].toFixed(0)}%</span>`).join('');
+  document.getElementById('relkey').innerHTML = BAND.map(b=>
+    `<span><span class="gly" style="color:${b.col()}">${b.gly}</span>${b.lab}</span>`).join('');
+}
+
+function drawScatter(){
+  const svg=document.getElementById('scatter');
+  const W=430,H=268,L=48,R=10,T=10,B=38;
+  const pts=rows.filter(r=>r.est!=null&&r.moe!=null);
+  const mxX=Math.max(...pts.map(p=>p.est));
+  const CAP=60, over=pts.filter(p=>p.moe>CAP).length;
+  const mxY=Math.min(CAP,Math.max(...pts.map(p=>p.moe)));
+  const x=v=>L+(v/mxX)*(W-L-R), y=v=>H-B-(Math.min(v,mxY)/mxY)*(H-T-B);
+  let s=`<g class="ax">`;
+  for(let i=0;i<=4;i++){const v=mxY*i/4, yy=y(v);
+    s+=`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}"/>
+        <text x="${L-7}" y="${yy+3.5}" text-anchor="end">${v.toFixed(0)}</text>`}
+  for(let i=0;i<=4;i++){const v=mxX*i/4;
+    s+=`<text x="${x(v)}" y="${H-B+15}" text-anchor="middle">${v.toFixed(0)}</text>`}
+  s+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/></g>
+      <text class="axlab" x="${(L+W-R)/2}" y="${H-5}" text-anchor="middle">Estimate (%)</text>
+      <text class="axlab" transform="rotate(-90 12 ${(T+H-B)/2})" x="12" y="${(T+H-B)/2}"
+            text-anchor="middle">Margin of error (± pts)</text>`;
+  const rad = state.lvl==='tract'?2.1:(state.lvl==='city'?2.8:3.6);
+  s+=pts.map(p=>{
+    const b=bandOf(p.cv), sel=p.geoid===state.sel, dim=!visible(p);
+    return `<circle class="dot${sel?' sel':''}" data-id="${p.geoid}"
+      cx="${x(p.est).toFixed(1)}" cy="${y(p.moe).toFixed(1)}"
+      r="${sel?rad+2.2:rad}" fill="${b.k==='reliable'?b.col():(b.k==='caution'?b.col():'none')}"
+      stroke="${b.k==='unreliable'?b.col():cssv('--surface-1')}"
+      stroke-width="${b.k==='unreliable'?1.4:1}"
+      opacity="${dim?.13:.8}"/>`}).join('');
+  if(over){
+    s+=`<line x1="${L}" x2="${W-R}" y1="${T+1}" y2="${T+1}" stroke="${cssv('--critical')}"
+          stroke-width="1" stroke-dasharray="3 3"/>
+        <text class="axlab" x="${W-R}" y="${T-2}" text-anchor="end"
+          fill="${cssv('--critical')}">${over} above ${CAP} pts, drawn on this line</text>`;
+  }
+  svg.innerHTML=s;
+  svg.querySelectorAll('.dot').forEach(c=>{
+    const r=rows.find(z=>z.geoid===c.dataset.id);
+    c.addEventListener('mousemove',e=>showTip(rowTip(r),e));
+    c.addEventListener('mouseleave',hideTip);
+    c.addEventListener('click',()=>select(r.geoid));
+  });
+}
+
+function drawHist(){
+  const svg=document.getElementById('hist');
+  const W=430,H=186,L=42,R=10,T=10,B=34, NB=22;
+  const v=rows.filter(r=>r.est!=null).map(r=>r.est);
+  const mn=0, mx=Math.max(...v), w=(mx-mn)/NB;
+  const cnt=new Array(NB).fill(0);
+  v.forEach(d=>{let i=Math.floor((d-mn)/w); if(i>=NB)i=NB-1; cnt[i]++});
+  const mxC=Math.max(...cnt);
+  const x=i=>L+(i/NB)*(W-L-R), bw=(W-L-R)/NB-2;
+  const y=c=>H-B-(c/mxC)*(H-T-B);
+  let s=`<g class="ax">`;
+  for(let i=0;i<=3;i++){const c=Math.round(mxC*i/3), yy=y(c);
+    s+=`<line class="grid-l" x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}"/>
+        <text x="${L-7}" y="${yy+3.5}" text-anchor="end">${c}</text>`}
+  for(let i=0;i<=4;i++){const vv=mn+(mx-mn)*i/4;
+    s+=`<text x="${x(NB*i/4)}" y="${H-B+15}" text-anchor="middle">${vv.toFixed(0)}</text>`}
+  s+=`<line x1="${L}" x2="${W-R}" y1="${H-B}" y2="${H-B}"/></g>
+      <text class="axlab" x="${(L+W-R)/2}" y="${H-4}" text-anchor="middle">Estimate (%)</text>`;
+  s+=cnt.map((c,i)=>{
+    const a=mn+i*w, b=a+w;
+    const on=state.histFilter && Math.abs(state.histFilter[0]-a)<1e-9;
+    const dim=state.histFilter && !on;
+    return `<rect class="bar${dim?' dim':''}" data-a="${a}" data-b="${b}"
+      x="${x(i)+1}" y="${y(c)}" width="${bw}" height="${Math.max(0,H-B-y(c))}"
+      rx="3" ry="3"/>`}).join('');
+  svg.innerHTML=s;
+  svg.querySelectorAll('.bar').forEach((b,i)=>{
+    const a=+b.dataset.a, bb=+b.dataset.b;
+    b.addEventListener('mousemove',e=>showTip(
+      `<b>${a.toFixed(1)}–${bb.toFixed(1)}%</b><span class="r">${cnt[i]} geograph${cnt[i]===1?'y':'ies'}</span>`,e));
+    b.addEventListener('mouseleave',hideTip);
+    b.addEventListener('click',()=>{
+      state.histFilter = (state.histFilter && Math.abs(state.histFilter[0]-a)<1e-9) ? null : [a,bb];
+      render(false);
+    });
+  });
+}
+
+function drawTable(){
+  const tb=document.querySelector('#tbl tbody');
+  const k=state.sortK, d=state.sortDir;
+  const list=rows.filter(visible).slice().sort((p,q)=>{
+    let A,B;
+    if(k==='rel'){A=p.cv==null?999:p.cv; B=q.cv==null?999:q.cv}
+    else if(k==='name'){A=p.name;B=q.name}
+    else {A=p[k]==null?-1:p[k]; B=q[k]==null?-1:q[k]}
+    return A<B?-d:A>B?d:0;
+  });
+  tb.innerHTML=list.map(r=>{
+    const b=bandOf(r.cv);
+    return `<tr data-id="${r.geoid}" class="${r.geoid===state.sel?'sel':''}">
+      <td>${r.name}</td>
+      <td class="num">${r.est==null?'—':r.est.toFixed(1)}</td>
+      <td class="num">${r.moe==null?'—':'± '+r.moe.toFixed(1)}</td>
+      <td class="num">${r.cv==null?'—':r.cv.toFixed(1)}</td>
+      <td><span class="gly" style="color:${b.col()}">${b.gly}</span> ${b.lab.replace(/ \(.*\)/,'')}</td>
+      <td class="num">${r.denom.toLocaleString()}</td></tr>`}).join('');
+  tb.querySelectorAll('tr').forEach(tr=>
+    tr.addEventListener('click',()=>select(tr.dataset.id)));
+  const nr=list.filter(r=>r.cv!=null&&r.cv>30).length;
+  document.getElementById('tblnote').textContent =
+    `${list.length.toLocaleString()} geographies shown. ${nr.toLocaleString()} carry a coefficient `+
+    `of variation above 30%, the band the Census Bureau treats as unreliable for publication. `+
+    `Sorting on the estimate column places several of them at the top.`;
+}
+
+function select(id){
+  state.sel = state.sel===id ? null : id;
+  const r=rows.find(z=>z.geoid===state.sel);
+  document.getElementById('selname').textContent = r? r.name : '— none —';
+  render(false);
+}
+
+function figures(){
+  fetch('findings.json').then(r=>r.json()).then(d=>{
+    const c=d.levels.county, ci=d.levels.city, t=d.levels.tract;
+    document.getElementById('f1').textContent = ci.pct_not_reliable+'%';
+    document.getElementById('f1b').textContent = c.pct_not_reliable+'%';
+    document.getElementById('f2').textContent = ci.rank_distance_to_significance.median;
+    document.getElementById('f3').textContent =
+      (c.features_published-c.features_with_estimate_and_moe)
+      +(ci.features_published-ci.features_with_estimate_and_moe)
+      +(t.features_published-t.features_with_estimate_and_moe);
+  }).catch(()=>{});
+}
+
+async function render(refetch=true){
+  const fc=await load(state.lvl);
+  if(refetch){ build(fc); computeBreaks(); }
+  drawMap(fc); await drawRef();
+  drawLegend(); drawScatter(); drawHist(); drawTable();
+}
+
+document.getElementById('lvl').onchange=e=>{
+  state.lvl=e.target.value; state.sel=null; state.histFilter=null;
+  document.getElementById('selname').textContent='— none —'; render();
+};
+document.getElementById('ind').onchange=e=>{state.ind=e.target.value; state.histFilter=null; render()};
+document.getElementById('bin').onchange=e=>{state.bin=e.target.value; computeBreaks(); render(false)};
+document.getElementById('flag').onchange=e=>{state.flag=e.target.checked; render(false)};
+document.querySelectorAll('#tbl th').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.k;
+  state.sortDir = state.sortK===k ? -state.sortDir : (k==='name'?1:-1);
+  state.sortK=k; drawTable();
+});
+async function buildCsv(){
+  const I=IND[state.ind];
+  const head=['geoid','name','indicator','estimate_pct','moe_90pct','cv_pct','reliability','units_in_base'];
+  const body=rows.filter(visible).map(r=>[r.geoid,`"${(r.name||'').replace(/"/g,'""')}"`,
+    `"${I.lab}"`, r.est??'', r.moe??'', r.cv??'', bandOf(r.cv).lab.replace(/ \(.*\)/,''), r.denom]);
+  return [head.join(','),...body.map(r=>r.join(','))].join('\n');
+}
+(async()=>{
+  const btn=document.getElementById('csv');
+  btn.onclick=async()=>{
+    btn.disabled=true; const was=btn.textContent; btn.textContent='Preparing…';
+    try{
+      saveCsv(`arc_${state.lvl}_${state.ind}_with_moe.csv`, await buildCsv());
+      btn.textContent='Exported';
+    }catch(e){ btn.textContent='Export failed'; }
+    setTimeout(()=>{btn.textContent=was; btn.disabled=false},1800);
+  };
+})();
+
+figures();
+addEventListener('load',()=>map.invalidateSize(false));
+render();
+</script>
+<script>
+function saveCsv(filename, csv){
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+</script>
+</body>
+</html>

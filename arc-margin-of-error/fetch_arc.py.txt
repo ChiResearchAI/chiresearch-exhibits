@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+"""Fetch ARC Housing Affordability 2023 from the Atlanta Regional Commission's
+own public ArcGIS Online service, at three geography levels.
+
+Source: services1.arcgis.com/Ug5xGQbHsD8zuZzM (ArcGIS Online org `opendata@arc`)
+Service: "ACS 2023 Housing Affordability" FeatureServer
+Layers:  11 = County, 9 = City, 21 = Tract
+
+Writes GeoJSON + the field schema to /home/claude/arc_data/.
+"""
+import json
+import os
+import subprocess
+import time
+import urllib.parse
+
+BASE = ("https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/"
+        "ACS%202023%20Housing%20Affordability/FeatureServer")
+OUT = "/home/claude/arc_data"
+os.makedirs(OUT, exist_ok=True)
+
+LAYERS = {"county": 11, "city": 9, "tract": 21}
+
+# Cost-burden core: renter burden, owner-with-mortgage burden, all-units burden.
+# Each as estimate + margin of error, plus the denominator the percent rests on.
+FIELDS = ",".join([
+    "GEOID", "NAME", "SUMLEV", "Vintage", "PlanningRegion", "ARCModelingArea",
+    "pGRAPI30PctPlus_e23", "pGRAPI30PctPlus_m23",
+    "GRAPI30PctPlus_e23", "OccGRAPI_e23", "OccGRAPI_m23",
+    "pMSMOCAPI30PctPlus_e23", "pMSMOCAPI30PctPlus_m23",
+    "MSMOCAPI30PctPlus_e23", "HUM_SMOCAPI_e23",
+    "HousingCost30PctPlus_e23",
+])
+
+
+def curl(url):
+    return subprocess.run(
+        ["curl", "-sS", "-L", "--max-time", "180",
+         "-A", "gis-data-client/1.0", url],
+        capture_output=True, check=True).stdout
+
+
+def q(layer, params):
+    url = f"{BASE}/{layer}/query?" + urllib.parse.urlencode(params)
+    for attempt in range(4):
+        try:
+            return json.loads(curl(url).decode())
+        except Exception as e:
+            if attempt == 3:
+                raise
+            print(f"   retry {attempt + 1} after {e}")
+            time.sleep(3)
+
+
+def page(layer, simplify):
+    """Page the whole layer. maxRecordCount on this service is 3000."""
+    feats, offset, chunk = [], 0, 1000
+    while True:
+        d = q(layer, {
+            "where": "1=1",
+            "outFields": FIELDS,
+            "returnGeometry": "true",
+            "outSR": "4326",
+            "f": "geojson",
+            "resultOffset": offset,
+            "resultRecordCount": chunk,
+            # display simplification only; every statistic below is computed
+            # from the attributes, never from geometry
+            "maxAllowableOffset": simplify,
+        })
+        batch = d.get("features", [])
+        feats.extend(batch)
+        print(f"   layer {layer}: +{len(batch)} (total {len(feats)})")
+        if len(batch) < chunk:
+            break
+        offset += chunk
+    return feats
+
+
+def main():
+    # schema first, so field aliases come from the service rather than guesswork
+    schema = q(11, {"f": "json"}) if False else json.loads(
+        curl(f"{BASE}/11?f=json").decode())
+    aliases = {f["name"]: f.get("alias", f["name"]) for f in schema["fields"]}
+    with open(f"{OUT}/field_aliases.json", "w") as fh:
+        json.dump(aliases, fh, indent=1)
+    print(f"schema: {len(aliases)} fields -> field_aliases.json")
+
+    # tracts are small; simplify harder so the browser payload stays sane
+    for name, lid in LAYERS.items():
+        simplify = 0.002 if name == "tract" else 0.0005
+        print(f"\n{name} (layer {lid}):")
+        feats = page(lid, simplify)
+        fc = {"type": "FeatureCollection", "features": feats}
+        path = f"{OUT}/{name}.geojson"
+        with open(path, "w") as fh:
+            json.dump(fc, fh)
+        print(f"   -> {path} ({os.path.getsize(path) / 1e6:.2f} MB, "
+              f"{len(feats)} features)")
+
+
+if __name__ == "__main__":
+    main()
