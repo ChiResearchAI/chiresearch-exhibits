@@ -272,7 +272,7 @@ function drawKpis() {
     const lo = Math.min(...vals), hi = Math.max(...vals);
     return `<div class="kpi"><div class="kn">${med.toFixed(1)}%</div>
       <div class="kl">${ind.label.replace(/^% /,'').replace(/, 2023$/,'')}</div>
-      <div class="ks">median across ${vals.length} ${S.geo === 'county' ? 'counties' : S.geo+'s'} ·
+      <div class="ks">median across ${vals.length} ${ {county:'counties', city:'cities', tract:'tracts'}[S.geo] || S.geo } ·
       range ${lo.toFixed(1)}–${hi.toFixed(1)}%</div></div>`;
   }).join('');
 }
