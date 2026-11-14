@@ -1,0 +1,149 @@
+{
+  "source": "Iowa Environmental Mesonet ASOS archive, station SLN",
+  "period": "2016-01-01 through 2025-12-31 UTC",
+  "standard": "FAA AC 150/5300-13B Change 1, Airport Design, active",
+  "rows_retrieved": 87328,
+  "observations_used": 85824,
+  "observations_dropped_missing_wind": 1504,
+  "calm_observations": 6185,
+  "calm_percent": 7.21,
+  "magnetic_variation_east_degrees": 7,
+  "runways": [
+    {
+      "name": "17/35",
+      "magnetic_heading": 170,
+      "length_ft": 12301,
+      "width_ft": 150
+    },
+    {
+      "name": "12/30",
+      "magnetic_heading": 120,
+      "length_ft": 6510,
+      "width_ft": 100
+    },
+    {
+      "name": "18/36",
+      "magnetic_heading": 180,
+      "length_ft": 4301,
+      "width_ft": 75
+    },
+    {
+      "name": "04/22",
+      "magnetic_heading": 40,
+      "length_ft": 3648,
+      "width_ft": 75
+    }
+  ],
+  "coverage_corrected": {
+    "10.5": {
+      "per_runway_percent": {
+        "17/35": 94.73806860551827,
+        "12/30": 84.19672818791946,
+        "18/36": 93.23965324384787,
+        "04/22": 79.1095730797912
+      },
+      "all_four_runways_percent": 99.82172818791946,
+      "primary_pair_percent": 98.93969052945563
+    },
+    "13.0": {
+      "per_runway_percent": {
+        "17/35": 97.72790827740492,
+        "12/30": 92.0057326621924,
+        "18/36": 96.8295581655481,
+        "04/22": 88.4472874720358
+      },
+      "all_four_runways_percent": 99.95339299030574,
+      "primary_pair_percent": 99.66093400447427
+    },
+    "16.0": {
+      "per_runway_percent": {
+        "17/35": 99.09232848620432,
+        "12/30": 96.60934004474272,
+        "18/36": 98.60178970917227,
+        "04/22": 94.606403803132
+      },
+      "all_four_runways_percent": 99.99067859806115,
+      "primary_pair_percent": 99.88814317673378
+    },
+    "20.0": {
+      "per_runway_percent": {
+        "17/35": 99.6819071588367,
+        "12/30": 99.11796234153617,
+        "18/36": 99.53509507829978,
+        "04/22": 98.10076435495898
+      },
+      "all_four_runways_percent": 99.99766964951529,
+      "primary_pair_percent": 99.96854026845638
+    }
+  },
+  "coverage_uncorrected": {
+    "10.5": {
+      "per_runway_percent": {
+        "17/35": 95.28803131991052,
+        "12/30": 81.63916853094706,
+        "18/36": 94.5819351230425,
+        "04/22": 82.47343400447427
+      },
+      "all_four_runways_percent": 99.86134414615958,
+      "primary_pair_percent": 98.56566927665921
+    },
+    "13.0": {
+      "per_runway_percent": {
+        "17/35": 98.10542505592841,
+        "12/30": 89.70567673378076,
+        "18/36": 97.51817673378076,
+        "04/22": 90.28243847874721
+      },
+      "all_four_runways_percent": 99.9650447427293,
+      "primary_pair_percent": 99.56422445935868
+    },
+    "16.0": {
+      "per_runway_percent": {
+        "17/35": 99.26011372110365,
+        "12/30": 95.58049030574199,
+        "18/36": 98.9431860551827,
+        "04/22": 95.54436987322893
+      },
+      "all_four_runways_percent": 99.98485272184936,
+      "primary_pair_percent": 99.84852721849366
+    },
+    "20.0": {
+      "per_runway_percent": {
+        "17/35": 99.80308538404176,
+        "12/30": 98.82084265473527,
+        "18/36": 99.6737509321402,
+        "04/22": 98.53304436987322
+      },
+      "all_four_runways_percent": 99.99766964951529,
+      "primary_pair_percent": 99.97203579418344
+    }
+  },
+  "flight_category_counts": {
+    "VFR": 74493,
+    "IFR": 3097,
+    "LIFR": 1394,
+    "MVFR": 6840
+  },
+  "below_vfr_total": 11331,
+  "below_vfr_driver_counts": {
+    "ceiling only": 8986,
+    "both agree": 601,
+    "visibility only": 1744
+  },
+  "monthly_below_vfr_percent": {
+    "1": 23.47,
+    "2": 16.84,
+    "3": 20.76,
+    "4": 13.78,
+    "5": 14.63,
+    "6": 3.69,
+    "7": 4.72,
+    "8": 6.96,
+    "9": 9.82,
+    "10": 12.8,
+    "11": 13.79,
+    "12": 16.86
+  },
+  "strong_wind_days_total": 85,
+  "strong_wind_days_per_year": 8.5
+}

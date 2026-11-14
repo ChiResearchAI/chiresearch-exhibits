@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SLN Common Operating Picture — Demonstration</title>
+<style>
+  :root{
+    color-scheme: light;
+    --surface-0:#f4f3ef;
+    --surface-1:#fcfcfb;
+    --surface-2:#f0efea;
+    --line:#e2e1db;
+    --line-strong:#cfcec6;
+    --ink:#0b0b0b;
+    --ink-2:#52514e;
+    --ink-3:#8a8982;
+    --s1:#86b6ef;
+    --s2:#5598e7;
+    --s3:#2a78d6;
+    --s4:#1c5cab;
+    --s5:#0d366b;
+    --accent:#2a78d6;
+    --warn:#eb6834;
+    --good:#1baf7a;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--surface-0); color:var(--ink);
+    font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 20px 56px}
+
+  /* ---- banner ---- */
+  .banner{
+    background:#1c2b3a;color:#e8eef5;padding:10px 20px;font-size:12.5px;
+    letter-spacing:.01em;
+  }
+  .banner strong{color:#fff}
+
+  header.top{padding:26px 0 18px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-size:11.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+  h1{font-size:25px;margin:8px 0 6px;letter-spacing:-.015em;font-weight:700}
+  .sub{color:var(--ink-2);font-size:13.5px;max-width:74ch}
+
+  /* ---- role tabs ---- */
+  nav.roles{display:flex;gap:4px;margin:20px 0 0;border-bottom:1px solid var(--line)}
+  nav.roles button{
+    appearance:none;border:0;background:none;cursor:pointer;font:inherit;font-size:13.5px;
+    padding:10px 16px;color:var(--ink-2);border-bottom:2.5px solid transparent;font-weight:500;
+  }
+  nav.roles button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:650}
+  nav.roles button:hover{color:var(--ink)}
+  nav.roles button:focus-visible{outline:2px solid var(--accent);outline-offset:-2px;border-radius:4px}
+
+  .panel{display:none;padding-top:22px}
+  .panel.active{display:block}
+
+  .panel-note{font-size:13px;color:var(--ink-2);margin:0 0 18px;max-width:82ch}
+
+  /* ---- cards ---- */
+  .grid{display:grid;gap:14px}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g2{grid-template-columns:1.15fr 1fr}
+  @media(max-width:880px){.g3,.g2{grid-template-columns:1fr}}
+
+  .card{
+    background:var(--surface-1);border:1px solid var(--line);border-radius:10px;padding:16px 18px;
+  }
+  .card h3{margin:0 0 2px;font-size:13px;font-weight:650;letter-spacing:.005em}
+  .card .cap{font-size:12px;color:var(--ink-3);margin:0 0 12px}
+
+  .stat{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1.05;margin:2px 0 4px}
+  .stat .unit{font-size:17px;font-weight:600;color:var(--ink-2);margin-left:2px}
+  .stat-label{font-size:12.5px;color:var(--ink-2);line-height:1.45}
+  .verdict{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:650;
+    padding:3px 8px;border-radius:999px;margin-top:9px}
+  .v-under{background:#fdece4;color:#8c3309}
+  .v-over{background:#e3f6ee;color:#0b5c40}
+  .v-flat{background:var(--surface-2);color:var(--ink-2)}
+
+  /* ---- definition drawer ---- */
+  details.def{margin-top:12px;border-top:1px solid var(--line);padding-top:9px}
+  details.def summary{
+    cursor:pointer;font-size:11.5px;color:var(--accent);font-weight:600;list-style:none;
+  }
+  details.def summary::-webkit-details-marker{display:none}
+  details.def summary::before{content:"▸ ";font-size:10px}
+  details.def[open] summary::before{content:"▾ "}
+  details.def summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:3px}
+  .defbody{font-size:12px;color:var(--ink-2);margin-top:8px;line-height:1.55}
+  .defbody dt{font-weight:650;color:var(--ink);margin-top:7px;font-size:11.5px}
+  .defbody dd{margin:1px 0 0}
+  .defbody code{background:var(--surface-2);padding:1px 4px;border-radius:3px;font-size:11px}
+
+  /* ---- tables ---- */
+  table{border-collapse:collapse;width:100%;font-size:12.5px}
+  th,td{text-align:right;padding:6px 7px;border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{font-size:11px;text-transform:uppercase;letter-spacing:.055em;color:var(--ink-3);font-weight:650;
+    border-bottom:1px solid var(--line-strong)}
+  tbody tr:last-child td{border-bottom:0}
+  td.num{font-variant-numeric:tabular-nums}
+  .pass{color:#0b5c40;font-weight:650}
+  .fail{color:#8c3309;font-weight:650}
+
+  /* ---- bars ---- */
+  .barrow{display:grid;grid-template-columns:78px 1fr 62px;align-items:center;gap:10px;margin:7px 0;font-size:12.5px}
+  .bartrack{display:block;background:var(--surface-2);border-radius:3px;height:15px;position:relative;overflow:hidden}
+  .barfill{display:block;height:100%;background:var(--s3);border-radius:3px}
+  .barval{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink-2);font-size:12px}
+  .ref{display:block;position:absolute;top:0;bottom:0;width:2px;background:var(--ink);z-index:2}
+
+  .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:11.5px;color:var(--ink-2)}
+  .legend span.key{display:inline-flex;align-items:center;gap:5px}
+  .swatch{width:11px;height:11px;border-radius:2px;display:inline-block}
+
+  .footnote{font-size:11.5px;color:var(--ink-3);margin-top:10px;line-height:1.5}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);line-height:1.6}
+  .sronly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <strong>DEMONSTRATION BUILD.</strong>
+  Built by ChiResearch Technologies, LLC for SAA-RFQ-2026-10 from public data only. This is a working
+  example of a role-based Common Operating Picture, not deployed production software, and it holds no
+  Salina Airport Authority system, record or credential.
+</div>
+
+<div class="wrap">
+
+<header class="top">
+  <div class="eyebrow">Salina Regional Airport · SLN / KSLN</div>
+  <h1>Common Operating Picture — role-based demonstration</h1>
+  <p class="sub">
+    Every figure on this page expands to its definition, its source and its exclusions. That is the
+    point of the exhibit: a Common Operating Picture is not a screen, it is an agreement about what
+    each number means, and the agreement has to be visible to the person reading it.
+  </p>
+  <nav class="roles" role="tablist" aria-label="Role views">
+    <button role="tab" id="t-exec" aria-controls="p-exec" aria-selected="true">Executive leadership</button>
+    <button role="tab" id="t-ops"  aria-controls="p-ops"  aria-selected="false">Airport operations</button>
+    <button role="tab" id="t-mx"   aria-controls="p-mx"   aria-selected="false">Maintenance</button>
+  </nav>
+</header>
+
+<!-- ============================ EXECUTIVE ============================ -->
+<section class="panel active" id="p-exec" role="tabpanel" aria-labelledby="t-exec">
+  <p class="panel-note">
+    The executive view answers three questions and stops: does the airfield meet the standard it is
+    held to, is weather exposure changing, and is any number on this page one the Authority could not
+    defend if asked.
+  </p>
+
+  <div class="grid g3">
+    <div class="card">
+      <h3>Primary runway wind coverage</h3>
+      <p class="cap">RWY 17/35, all-weather, 10.5-kt allowable crosswind</p>
+      <div class="stat">94.74<span class="unit">%</span></div>
+      <div class="stat-label">Against the FAA's 95% wind coverage recommendation.</div>
+      <div class="verdict v-under">0.26 points under the standard</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Definition</dt>
+          <dd>Share of hourly observations in which the crosswind component on RWY 17/35 does not
+            exceed 10.5 knots. Crosswind = wind speed × |sin(wind direction − runway true heading)|.</dd>
+          <dt>Standard</dt>
+          <dd>FAA AC 150/5300-13B Change 1, <em>Airport Design</em> (active, issued 16 Aug 2024;
+            supersedes 13A, cancelled 31 Mar 2022). 10.5 kt is the allowable crosswind for Runway
+            Design Code A-I and B-I.</dd>
+          <dt>Source</dt>
+          <dd>Iowa Environmental Mesonet ASOS archive, station SLN, hourly routine observations,
+            1 Jan 2016 – 31 Dec 2025 UTC.</dd>
+          <dt>Population</dt>
+          <dd>87,328 records retrieved; 85,824 used; 1,504 excluded for missing wind direction or
+            speed. Calm observations (6,185, 7.21%) are counted as covered on every runway.</dd>
+          <dt>Known limits</dt>
+          <dd>Runway true headings are derived from the FAA magnetic designators plus the published
+            7°E variation, not from surveyed bearings. A production implementation would source
+            runway geometry from the Authority's electronic ALP. See the governance card below.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>Hours below VFR</h3>
+      <p class="cap">Ten-year rate, all hourly observations</p>
+      <div class="stat">13.20<span class="unit">%</span></div>
+      <div class="stat-label">11,331 of 85,824 hours at MVFR or worse. Ceiling was the binding
+        element in 79.3% of them.</div>
+      <div class="verdict v-flat">2025: 12.72% · 2016: 11.51%</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Definition</dt>
+          <dd>An observation is below VFR when ceiling is under 3,000 ft or visibility is 5 statute
+            miles or less. Ceiling is the lowest BKN, OVC or VV layer.</dd>
+          <dt>Why this is a governance example</dt>
+          <dd>Counting by ceiling alone gives 9,587 hours. Counting by visibility alone gives 2,345.
+            Counting by either gives 11,331. All three are defensible; they differ by more than 4×.
+            Until one is certified, "how much bad weather did we have" has no single answer.</dd>
+          <dt>Source</dt>
+          <dd>Same archive and period as above.</dd>
+          <dt>Known limits</dt>
+          <dd>Hourly routine observations only; specials (SPECI) are excluded, so short-lived
+            deteriorations between the hour are not represented.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>Seasonal spread</h3>
+      <p class="cap">Below-VFR rate, worst month against best month</p>
+      <div class="stat">6.4<span class="unit">×</span></div>
+      <div class="stat-label">January runs at 23.47% below VFR; June at 3.69%. The same airfield,
+        the same measure.</div>
+      <div class="verdict v-flat">Drives staffing and maintenance windows</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Definition</dt>
+          <dd>Below-VFR observations in each calendar month across all ten years, divided by all
+            observations in that month — computed on the same 85,824-observation population used
+            everywhere else on this page, so the denominators agree.</dd>
+          <dt>Why it is reported as a ratio</dt>
+          <dd>Because the absolute rates are easy to dismiss and the ratio is not. A single annual
+            average conceals a sixfold swing, which is the kind of thing a dashboard exists to stop
+            concealing.</dd>
+          <dt>Source</dt>
+          <dd>Same archive and period as above.</dd>
+        </dl>
+      </details>
+    </div>
+  </div>
+
+  <div class="grid g2" style="margin-top:14px">
+    <div class="card">
+      <h3>All-weather wind coverage by runway</h3>
+      <p class="cap">At a 10.5-kt allowable crosswind. The marker is the FAA 95% standard.</p>
+      <div id="execBars"></div>
+      <p class="footnote">
+        The airfield as a whole provides 99.82% coverage at this threshold. No single runway does.
+        That is the finding a combined "runway status" tile would hide.
+      </p>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Combined coverage</dt>
+          <dd>An observation counts as covered when at least one of the four runways is within the
+            threshold. 17/35 and 12/30 together give 98.94%; all four give 99.82%.</dd>
+          <dt>Source</dt>
+          <dd>Same archive, period and exclusions as the cards above.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>One governance finding, shown rather than asserted</h3>
+      <p class="cap">What a single unstated convention does to a reported number</p>
+      <p style="font-size:13px;color:var(--ink-2);margin:4px 0 12px;line-height:1.6">
+        METAR wind direction is <strong>true</strong>. FAA runway designators are <strong>magnetic</strong>.
+        At SLN the difference is 7°. An integration that compares them directly — a quiet, ordinary
+        mistake — changes this result:
+      </p>
+      <table>
+        <caption class="sronly">RWY 17/35 wind coverage at 10.5 knots, corrected and uncorrected</caption>
+        <thead><tr><th>RWY 17/35 at 10.5 kt</th><th>Coverage</th><th>Against 95%</th></tr></thead>
+        <tbody>
+          <tr><td>Corrected for 7°E variation</td><td class="num">94.74%</td><td class="fail">Under</td></tr>
+          <tr><td>Uncorrected</td><td class="num">95.29%</td><td class="pass">Over</td></tr>
+        </tbody>
+      </table>
+      <p class="footnote">
+        Same ten years, same 85,824 observations, same formula. Only the heading convention differs,
+        and the verdict against an FAA standard reverses. Neither screen would look wrong.
+      </p>
+      <details class="def">
+        <summary>Why this is in an executive view</summary>
+        <dl class="defbody">
+          <dt>The point</dt>
+          <dd>Because the failure is silent. A dashboard cannot tell leadership that a number is
+            wrong; it can only tell them where the number came from. That is why runway geometry,
+            magnetic variation and metric definitions belong in a governed semantic layer sourced
+            from the Authority's ALP, and why establishing it is Phase 1 work rather than a
+            configuration detail deferred to Phase 2.</dd>
+          <dt>Direction of the error</dt>
+          <dd>It is not uniform. The same uncorrected comparison moves RWY 12/30 the other way,
+            from 84.20% to 81.64%. An error that moved every number the same way would be easier
+            to notice.</dd>
+        </dl>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ OPERATIONS ============================ -->
+<section class="panel" id="p-ops" role="tabpanel" aria-labelledby="t-ops">
+  <p class="panel-note">
+    The operations view is built around a single question an operations duty officer actually asks:
+    which runway is usable, for which aircraft, and how often does that change.
+  </p>
+
+  <div class="grid g2">
+    <div class="card">
+      <h3>Ten-year wind rose</h3>
+      <p class="cap">16-point direction bins by sustained speed band, knots. Calm 7.21%.</p>
+      <div id="rose"></div>
+      <div class="legend" id="roseLegend"></div>
+      <p class="footnote">
+        The distribution is strongly bimodal north–south, which is what puts RWY 17/35 ahead of the
+        other three and RWY 04/22 last.
+      </p>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Binning</dt>
+          <dd>Direction rounded to the nearest of 16 compass points (22.5° bins). Speed bands are
+            0–5, 6–10, 11–16, 17–21 and 22+ knots sustained. Calm observations carry no direction
+            and are excluded from the petals, then reported separately.</dd>
+          <dt>Source</dt>
+          <dd>Iowa Environmental Mesonet ASOS archive, station SLN, 2016–2025, 85,824 observations
+            with wind reported.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>Runway usability by aircraft category</h3>
+      <p class="cap">Percent of hours within the allowable crosswind for each Runway Design Code</p>
+      <table>
+        <thead>
+          <tr><th>Runway</th><th>A-I/B-I<br>10.5 kt</th><th>A-II/B-II<br>13 kt</th>
+              <th>C-I–D-III<br>16 kt</th><th>A-IV–D-VI<br>20 kt</th></tr>
+        </thead>
+        <tbody id="rdcTable"></tbody>
+      </table>
+      <p class="footnote">
+        Green is at or above the FAA 95% recommendation; amber is below it. The table is the reason a
+        single airfield-status indicator is the wrong design: usability at SLN is category-dependent,
+        and the category that struggles is the training and light-GA fleet the airport hosts.
+      </p>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Allowable crosswind by RDC</dt>
+          <dd>10.5 kt for A-I and B-I; 13 kt for A-II and B-II; 16 kt for C-I through D-III;
+            20 kt for A-IV through D-VI. FAA AC 150/5300-13B Change 1.</dd>
+          <dt>What this table is not</dt>
+          <dd>It is not a finding about whether SLN's runway system is adequate. That turns on the
+            airport's critical aircraft, which is established in the Authority's own master planning
+            record and is not an input available to this exhibit.</dd>
+        </dl>
+      </details>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Below-VFR rate by calendar month</h3>
+    <p class="cap">Ten years pooled. The operational year is not flat.</p>
+    <div id="monthBars"></div>
+    <details class="def">
+      <summary>Definition &amp; source</summary>
+      <dl class="defbody">
+        <dt>Definition</dt>
+        <dd>Observations at MVFR or worse in each calendar month, across all ten years, as a share
+          of all observations in that month.</dd>
+        <dt>Source</dt>
+        <dd>Same archive and period. Hourly routine observations only.</dd>
+      </dl>
+    </details>
+  </div>
+</section>
+
+<!-- ============================ MAINTENANCE ============================ -->
+<section class="panel" id="p-mx" role="tabpanel" aria-labelledby="t-mx">
+  <p class="panel-note">
+    The maintenance view asks a different question from the same data: when is outdoor airfield work
+    actually possible, and how much of the year is lost to conditions.
+  </p>
+
+  <div class="grid g3">
+    <div class="card">
+      <h3>High-wind days</h3>
+      <p class="cap">Any hour at or above 30 kt sustained</p>
+      <div class="stat">8.5<span class="unit">/yr</span></div>
+      <div class="stat-label">85 days across ten years. Days on which lifts, signage, lighting and
+        pavement-marking work are likely to be stood down.</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Definition</dt>
+          <dd>A calendar day (UTC) containing at least one hourly observation with sustained wind of
+            30 knots or more. Gusts are not counted, because gust reporting is intermittent in this
+            archive and including it would make the series inconsistent across years.</dd>
+          <dt>Why 30 knots</dt>
+          <dd>It is a working threshold chosen for this exhibit, not an Authority standard. In an
+            engagement this is exactly the kind of number the Authority sets and the semantic layer
+            then holds — once, for every report.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>Best working window</h3>
+      <p class="cap">Lowest below-VFR month</p>
+      <div class="stat">June</div>
+      <div class="stat-label">3.69% of hours below VFR, against 23.47% in January. June, July and
+        August each run under 7%.</div>
+      <div class="verdict v-over">Six-month planning signal</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Definition</dt>
+          <dd>Calendar month with the lowest pooled below-VFR rate, 2016–2025.</dd>
+          <dt>Caution</dt>
+          <dd>Below-VFR is a flight-operations measure, not a works measure. It is a reasonable
+            proxy for "poor outdoor conditions" and nothing more. A works-specific index would
+            combine wind, precipitation, temperature and daylight — and would have to be defined by
+            the Authority before it could be reported.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>What closes the airfield down</h3>
+      <p class="cap">Binding element in 11,331 below-VFR hours</p>
+      <div class="stat">79.3<span class="unit">%</span></div>
+      <div class="stat-label">Ceiling alone. Visibility alone accounted for 15.4%; both together for
+        5.3%.</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Definition</dt>
+          <dd>For each below-VFR observation, whether the ceiling-derived category, the
+            visibility-derived category, or both equally, produced the result.</dd>
+          <dt>Why ties are reported</dt>
+          <dd>601 hours had both at the same category. Assigning them to one element by convention
+            would have overstated that element by about five points. They are shown separately
+            instead.</dd>
+        </dl>
+      </details>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h3>Airfield inventory</h3>
+    <p class="cap">Four runways and six helipads, from the FAA airport record</p>
+    <table>
+      <thead><tr><th>Runway</th><th>Length (ft)</th><th>Width (ft)</th><th>Magnetic</th><th>True heading used</th></tr></thead>
+      <tbody id="rwyTable"></tbody>
+    </table>
+    <p class="footnote">
+      True headings are derived from the magnetic designators plus the published 7°E variation. In an
+      engagement these would come from the Authority's electronic Airport Layout Plan, and the
+      derivation above would be retired rather than carried forward.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <strong>ChiResearch Technologies, LLC</strong> · prepared for Salina Airport Authority,
+  SAA-RFQ-2026-10, November 2026.<br>
+  Data sources: Iowa Environmental Mesonet ASOS archive (Iowa State University), station SLN, hourly
+  routine observations 2016-01-01 to 2025-12-31 UTC; FAA airport and runway record for KSLN.
+  Design standard: FAA AC 150/5300-13B Change 1, <em>Airport Design</em>, active.<br>
+  This page contains no Salina Airport Authority data, system access or credential of any kind. All
+  analysis is reproducible from the cited public sources.
+</footer>
+
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Data. Every value here was computed from the public archive by the analysis
+// scripts that accompany this exhibit; none of it is typed in by hand.
+// ---------------------------------------------------------------------------
+var COVERAGE = {
+  "10.5": {"04/22":79.11,"12/30":84.20,"17/35":94.74,"18/36":93.24,"all":99.82},
+  "13.0": {"04/22":88.45,"12/30":92.01,"17/35":97.73,"18/36":96.83,"all":99.95},
+  "16.0": {"04/22":94.61,"12/30":96.61,"17/35":99.09,"18/36":98.60,"all":99.99},
+  "20.0": {"04/22":98.10,"12/30":99.12,"17/35":99.68,"18/36":99.54,"all":100.00}
+};
+
+var RUNWAYS = [
+  {name:"17/35", length:12301, width:150, mag:170},
+  {name:"12/30", length:6510,  width:100, mag:120},
+  {name:"18/36", length:4301,  width:75,  mag:180},
+  {name:"04/22", length:3648,  width:75,  mag:40}
+];
+
+var ROSE = {
+  "N":[1100,2398,2497,1025,387], "NNE":[641,1661,1089,160,30],
+  "NE":[890,1587,473,33,4],      "ENE":[553,1132,272,9,2],
+  "E":[1269,2220,481,21,5],      "ESE":[1227,1775,595,49,2],
+  "SE":[1364,2449,1119,173,30],  "SSE":[1678,3517,2240,573,147],
+  "S":[2879,6477,6136,2312,759], "SSW":[852,1448,1238,491,220],
+  "SW":[611,802,361,88,38],      "WSW":[456,566,213,28,13],
+  "W":[639,902,380,87,56],       "WNW":[866,1291,703,293,159],
+  "NW":[1205,1842,1139,499,334], "NNW":[1229,1947,1793,928,482]
+};
+var POINTS = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW"];
+var BANDS  = ["0–5","6–10","11–16","17–21","22+"];
+var RAMP   = ["#86b6ef","#5598e7","#2a78d6","#1c5cab","#0d366b"];
+
+var MONTHLY = {1:23.47,2:16.84,3:20.76,4:13.78,5:14.63,6:3.69,
+               7:4.72,8:6.96,9:9.82,10:12.80,11:13.79,12:16.86};
+var MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+var MAGNETIC_VARIATION = 7;
+
+// ---------------------------------------------------------------------------
+// Role tabs
+// ---------------------------------------------------------------------------
+var tabs = Array.prototype.slice.call(document.querySelectorAll('nav.roles button'));
+tabs.forEach(function (tab) {
+  tab.addEventListener('click', function () {
+    tabs.forEach(function (other) {
+      var isThis = (other === tab);
+      other.setAttribute('aria-selected', isThis ? 'true' : 'false');
+      document.getElementById(other.getAttribute('aria-controls'))
+              .classList.toggle('active', isThis);
+    });
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Executive bar list
+// ---------------------------------------------------------------------------
+(function buildExecBars() {
+  var container = document.getElementById('execBars');
+  var order = ["17/35","18/36","12/30","04/22"];
+  var floor = 75, ceiling = 100;
+
+  order.forEach(function (name) {
+    var value = COVERAGE["10.5"][name];
+    var widthPercent = (value - floor) / (ceiling - floor) * 100;
+    var referencePercent = (95 - floor) / (ceiling - floor) * 100;
+
+    var row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML =
+      '<span>RWY ' + name + '</span>' +
+      '<span class="bartrack">' +
+        '<span class="barfill" style="width:' + widthPercent.toFixed(2) + '%"></span>' +
+        '<span class="ref" style="left:' + referencePercent.toFixed(2) + '%"></span>' +
+      '</span>' +
+      '<span class="barval">' + value.toFixed(2) + '%</span>';
+    container.appendChild(row);
+  });
+
+  var note = document.createElement('div');
+  note.className = 'barrow';
+  note.style.marginTop = '10px';
+  note.innerHTML =
+    '<span style="font-weight:650">All four</span>' +
+    '<span class="bartrack">' +
+      '<span class="barfill" style="width:' +
+        (((COVERAGE["10.5"].all - floor) / (ceiling - floor)) * 100).toFixed(2) +
+        '%;background:var(--s5)"></span>' +
+      '<span class="ref" style="left:' + (((95 - floor) / (ceiling - floor)) * 100).toFixed(2) + '%"></span>' +
+    '</span>' +
+    '<span class="barval" style="font-weight:650;color:var(--ink)">' +
+      COVERAGE["10.5"].all.toFixed(2) + '%</span>';
+  container.appendChild(note);
+})();
+
+// ---------------------------------------------------------------------------
+// RDC table
+// ---------------------------------------------------------------------------
+(function buildRdcTable() {
+  var body = document.getElementById('rdcTable');
+  ["17/35","18/36","12/30","04/22"].forEach(function (name) {
+    var cells = ["10.5","13.0","16.0","20.0"].map(function (threshold) {
+      var value = COVERAGE[threshold][name];
+      var cssClass = value >= 95 ? 'pass' : 'fail';
+      return '<td class="num ' + cssClass + '">' + value.toFixed(2) + '</td>';
+    }).join('');
+    var row = document.createElement('tr');
+    row.innerHTML = '<td>RWY ' + name + '</td>' + cells;
+    body.appendChild(row);
+  });
+
+  var allRow = document.createElement('tr');
+  allRow.innerHTML = '<td style="font-weight:650">Airfield combined</td>' +
+    ["10.5","13.0","16.0","20.0"].map(function (threshold) {
+      return '<td class="num pass">' + COVERAGE[threshold].all.toFixed(2) + '</td>';
+    }).join('');
+  body.appendChild(allRow);
+})();
+
+// ---------------------------------------------------------------------------
+// Runway inventory table
+// ---------------------------------------------------------------------------
+(function buildRunwayTable() {
+  var body = document.getElementById('rwyTable');
+  RUNWAYS.forEach(function (runway) {
+    var trueHeading = runway.mag + MAGNETIC_VARIATION;
+    var reciprocal = (trueHeading + 180) % 360;
+    var row = document.createElement('tr');
+    row.innerHTML =
+      '<td>RWY ' + runway.name + '</td>' +
+      '<td class="num">' + runway.length.toLocaleString() + '</td>' +
+      '<td class="num">' + runway.width + '</td>' +
+      '<td class="num">' + runway.mag + '° / ' + ((runway.mag + 180) % 360) + '°</td>' +
+      '<td class="num">' + trueHeading + '° / ' + reciprocal + '°</td>';
+    body.appendChild(row);
+  });
+})();
+
+// ---------------------------------------------------------------------------
+// Wind rose - stacked polar bars
+// ---------------------------------------------------------------------------
+(function buildRose() {
+  var size = 340, centre = size / 2, innerRadius = 26, outerRadius = 150;
+
+  var totals = POINTS.map(function (point) {
+    return ROSE[point].reduce(function (sum, n) { return sum + n; }, 0);
+  });
+  var maxTotal = Math.max.apply(null, totals);
+
+  var svg = ['<svg viewBox="0 0 ' + size + ' ' + size + '" width="100%" ' +
+             'style="max-width:360px;display:block;margin:4px auto 0" ' +
+             'role="img" aria-label="Ten-year wind rose for Salina Regional Airport, ' +
+             'showing a strongly bimodal north-south distribution with south dominant">'];
+
+  // rings
+  [0.25, 0.5, 0.75, 1].forEach(function (fraction) {
+    var radius = innerRadius + (outerRadius - innerRadius) * fraction;
+    svg.push('<circle cx="' + centre + '" cy="' + centre + '" r="' + radius.toFixed(1) +
+             '" fill="none" stroke="#e2e1db" stroke-width="1"/>');
+  });
+
+  function polar(angleDegrees, radius) {
+    var radians = (angleDegrees - 90) * Math.PI / 180;
+    return [centre + radius * Math.cos(radians), centre + radius * Math.sin(radians)];
+  }
+
+  POINTS.forEach(function (point, index) {
+    var angle = index * 22.5;
+    var halfWidth = 8.6;
+    var cumulative = 0;
+
+    ROSE[point].forEach(function (count, bandIndex) {
+      var startFraction = cumulative / maxTotal;
+      cumulative += count;
+      var endFraction = cumulative / maxTotal;
+
+      var r0 = innerRadius + (outerRadius - innerRadius) * startFraction;
+      var r1 = innerRadius + (outerRadius - innerRadius) * endFraction;
+      if (r1 - r0 < 0.4) { return; }
+
+      var a0 = angle - halfWidth, a1 = angle + halfWidth;
+      var p1 = polar(a0, r0), p2 = polar(a1, r0);
+      var p3 = polar(a1, r1), p4 = polar(a0, r1);
+
+      svg.push('<path d="M' + p1[0].toFixed(1) + ',' + p1[1].toFixed(1) +
+               ' L' + p2[0].toFixed(1) + ',' + p2[1].toFixed(1) +
+               ' L' + p3[0].toFixed(1) + ',' + p3[1].toFixed(1) +
+               ' L' + p4[0].toFixed(1) + ',' + p4[1].toFixed(1) + ' Z" fill="' +
+               RAMP[bandIndex] + '" stroke="#fcfcfb" stroke-width="0.7"><title>' +
+               point + ', ' + BANDS[bandIndex] + ' kt: ' + count.toLocaleString() +
+               ' observations</title></path>');
+    });
+  });
+
+  // cardinal labels
+  [["N", 0], ["E", 90], ["S", 180], ["W", 270]].forEach(function (entry) {
+    var position = polar(entry[1], outerRadius + 15);
+    svg.push('<text x="' + position[0].toFixed(1) + '" y="' + (position[1] + 4).toFixed(1) +
+             '" text-anchor="middle" font-size="11.5" font-weight="650" fill="#52514e">' +
+             entry[0] + '</text>');
+  });
+
+  svg.push('<circle cx="' + centre + '" cy="' + centre + '" r="' + innerRadius +
+           '" fill="#fcfcfb" stroke="#e2e1db"/>');
+  svg.push('<text x="' + centre + '" y="' + (centre - 2) +
+           '" text-anchor="middle" font-size="10" fill="#52514e">calm</text>');
+  svg.push('<text x="' + centre + '" y="' + (centre + 9) +
+           '" text-anchor="middle" font-size="10.5" font-weight="650" fill="#0b0b0b">7.2%</text>');
+  svg.push('</svg>');
+
+  document.getElementById('rose').innerHTML = svg.join('');
+
+  document.getElementById('roseLegend').innerHTML = BANDS.map(function (label, index) {
+    return '<span class="key"><span class="swatch" style="background:' + RAMP[index] +
+           '"></span>' + label + ' kt</span>';
+  }).join('');
+})();
+
+// ---------------------------------------------------------------------------
+// Monthly below-VFR bars
+// ---------------------------------------------------------------------------
+(function buildMonthBars() {
+  var container = document.getElementById('monthBars');
+  var maxValue = 24;
+
+  for (var month = 1; month <= 12; month++) {
+    var value = MONTHLY[month];
+    var row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML =
+      '<span>' + MONTH_NAMES[month - 1] + '</span>' +
+      '<span class="bartrack"><span class="barfill" style="width:' +
+        (value / maxValue * 100).toFixed(1) + '%"></span></span>' +
+      '<span class="barval">' + value.toFixed(2) + '%</span>';
+    container.appendChild(row);
+  }
+})();
+</script>
+</body>
+</html>
