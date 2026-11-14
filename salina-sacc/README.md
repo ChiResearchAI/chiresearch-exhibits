@@ -9,9 +9,19 @@ SAA-RFQ-2026-10 (Smart Airport Dashboard & Operational Intelligence Platform).
 ## What it shows
 
 Ten years of hourly ASOS observations at KSLN (2016–2025), reduced to a
-five-view common operating picture — executive leadership, airport operations,
-maintenance, an airfield GIS, and Part 139 and obstacles — and four findings
+six-view common operating picture — executive leadership, airport operations,
+maintenance, current field conditions, an airfield GIS, and Part 139 and
+obstacles — and four findings
 that are consequences of the data rather than restatements of it.
+
+The **Field conditions** view takes the current routine observation (METAR) for
+KSLN from the NOAA/NWS Aviation Weather Center and resolves the wind onto all
+four runways, computing the crosswind component both with and without the
+magnetic-to-true conversion. It is built by `build_conditions.py`, which reuses
+the conversion and the crosswind formula from `reproduce.py` unchanged so the
+two analyses cannot drift apart. **The page is static, so the reading shown is
+the observation retrieved when the page was last built, not a live feed**; the
+build timestamp is displayed with the flight category.
 
 The Authority has stated it maintains no enterprise GIS platform and that GIS
 capability is an initial priority. The GIS view is that capability, standing:

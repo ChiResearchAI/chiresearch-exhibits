@@ -273,6 +273,7 @@
     <button role="tab" id="t-exec" aria-controls="p-exec" aria-selected="true">Executive leadership</button>
     <button role="tab" id="t-ops"  aria-controls="p-ops"  aria-selected="false">Airport operations</button>
     <button role="tab" id="t-mx"   aria-controls="p-mx"   aria-selected="false">Maintenance</button>
+    <button role="tab" id="t-now"  aria-controls="p-now"  aria-selected="false">Field conditions</button>
     <button role="tab" id="t-gis"  aria-controls="p-gis"  aria-selected="false">Airfield GIS</button>
     <button role="tab" id="t-av"   aria-controls="p-av"   aria-selected="false">Part 139 &amp; obstacles</button>
   </nav>
@@ -593,6 +594,82 @@
 </section>
 
 <!-- ============================ AIRFIELD GIS ============================ -->
+<!-- ========================= FIELD CONDITIONS ========================= -->
+<section class="panel" id="p-now" role="tabpanel" aria-labelledby="t-now">
+  <p class="panel-note">
+    Situational awareness is the first thing the RFQ asks a common operating picture to do. This view
+    takes the current routine observation for Salina Regional and resolves the wind onto every runway
+    &mdash; which is where the magnetic-variation problem in the Part&nbsp;139 view stops being a
+    historical finding and becomes the number on the screen in front of an operations duty officer.
+  </p>
+
+  <div class="grid g3">
+    <div class="card">
+      <h3>Flight category</h3>
+      <p class="cap" id="now-obs-time">&nbsp;</p>
+      <div class="stat" id="now-cat">&mdash;</div>
+      <div class="stat-label" id="now-catnote">Derived by the Aviation Weather Center from ceiling and visibility.</div>
+    </div>
+    <div class="card">
+      <h3>Surface wind</h3>
+      <p class="cap">Reported true, as all METAR winds are</p>
+      <div class="stat" id="now-wind">&mdash;</div>
+      <div class="stat-label" id="now-windnote">&nbsp;</div>
+    </div>
+    <div class="card">
+      <h3>Runway with least crosswind</h3>
+      <p class="cap">Computed on true headings</p>
+      <div class="stat" id="now-best">&mdash;</div>
+      <div class="stat-label" id="now-bestnote">&nbsp;</div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:18px">
+    <div class="card">
+      <h3>Every runway, both ways of computing it</h3>
+      <p class="cap">FAA designators are magnetic &middot; METAR winds are true &middot; variation at SLN is 7&deg;E</p>
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left">Runway</th>
+            <th>Magnetic</th>
+            <th>True</th>
+            <th>Crosswind, corrected</th>
+            <th>Crosswind, uncorrected</th>
+            <th>Error</th>
+            <th style="text-align:left">Favours</th>
+          </tr>
+        </thead>
+        <tbody id="now-rows"></tbody>
+      </table>
+      <div class="stat-label" id="now-finding" style="margin-top:12px">&nbsp;</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl class="defbody">
+          <dt>Definition</dt>
+          <dd>Crosswind = wind speed &times; |sin(wind direction &minus; runway true heading)|. The
+            corrected column converts each runway's magnetic designator to true by adding the
+            published 7&deg;E variation before comparing it with the wind. The uncorrected column
+            compares the true wind directly against the magnetic designator, which is the error this
+            submittal is about.</dd>
+          <dt>Source</dt>
+          <dd>NOAA / National Weather Service Aviation Weather Center, aviationweather.gov, routine
+            observation (METAR) for KSLN. Raw report shown below.</dd>
+          <dt>Currency</dt>
+          <dd><strong>This page is static, so the reading above is the observation retrieved when the
+            page was last built</strong>, not a live feed. The build timestamp is shown with the
+            flight category. In production this feed is polled on a schedule and the view refreshes
+            with it; nothing here depends on that to be checked.</dd>
+          <dt>Runway record</dt>
+          <dd>Magnetic headings, lengths and widths transcribed from the FAA airport and runway
+            record for KSLN, the same record used throughout this exhibit.</dd>
+        </dl>
+      </details>
+      <p class="cap" style="margin-top:12px"><code id="now-raw">&nbsp;</code></p>
+    </div>
+  </div>
+</section>
+
 <section class="panel" id="p-gis" role="tabpanel" aria-labelledby="t-gis">
   <p class="panel-note">
     The Authority has no enterprise GIS today. This is the airfield as a map, built from public
@@ -1112,6 +1189,86 @@ function gisRunwayStyle(runwayName) {
     fillOpacity: selected ? 0.9 : 0.78
   };
 }
+
+// --------------------------- Field conditions ---------------------------
+// Renders the snapshot written by build_conditions.py. Every number shown here
+// is computed in that script, not in the browser, so the page and the
+// reproduction script cannot disagree.
+
+function nowFormatObsTime(isoText) {
+if (!isoText) { return 'observation time not reported'; }
+return 'Observed ' + isoText.replace('T', ' ').replace('.000Z', 'Z');
+}
+
+function nowRender(conditions) {
+document.getElementById('now-cat').textContent = conditions.flight_category || 'n/a';
+document.getElementById('now-obs-time').textContent = nowFormatObsTime(conditions.observation_time_utc);
+document.getElementById('now-raw').textContent = conditions.raw_metar || '';
+
+var categoryNote = 'Derived by the Aviation Weather Center from ceiling and visibility. '
+                   + 'Snapshot built ' + conditions.fetched_utc + '.';
+document.getElementById('now-catnote').textContent = categoryNote;
+
+if (!conditions.wind_is_resolvable) {
+    document.getElementById('now-wind').textContent = 'calm';
+    document.getElementById('now-windnote').textContent =
+      'A calm or variable wind cannot be resolved into components, so no runway figures are shown.';
+    document.getElementById('now-best').textContent = 'n/a';
+    document.getElementById('now-bestnote').textContent = 'No resolvable wind direction.';
+    return;
+}
+
+document.getElementById('now-wind').textContent =
+    conditions.wind_direction_true + '\u00B0 / ' + conditions.wind_speed_kt + ' kt';
+document.getElementById('now-windnote').textContent =
+    'True direction. Comparing this against a magnetic runway designator without converting is the '
+    + 'error the Part 139 view documents over ten years.';
+
+var runways = conditions.runways;
+var best = runways[0];
+
+document.getElementById('now-best').textContent = 'RWY ' + best.favoured_end;
+document.getElementById('now-bestnote').textContent =
+    best.crosswind_kt + ' kt crosswind on ' + best.name + ', the least of the four.';
+
+var rowsHtml = '';
+var biggestErrorRunway = runways[0];
+
+runways.forEach(function (runway) {
+    if (runway.error_kt > biggestErrorRunway.error_kt) {
+      biggestErrorRunway = runway;
+    }
+    rowsHtml += '<tr>'
+      + '<td style="text-align:left"><strong>' + runway.name + '</strong></td>'
+      + '<td>' + runway.magnetic_heading + '\u00B0</td>'
+      + '<td>' + runway.true_heading + '\u00B0</td>'
+      + '<td><strong>' + runway.crosswind_kt.toFixed(1) + ' kt</strong></td>'
+      + '<td>' + runway.crosswind_uncorrected_kt.toFixed(1) + ' kt</td>'
+      + '<td>' + runway.error_kt.toFixed(1) + ' kt</td>'
+      + '<td style="text-align:left">RWY ' + runway.favoured_end + '</td>'
+      + '</tr>';
+});
+
+document.getElementById('now-rows').innerHTML = rowsHtml;
+
+// Call out the runway where skipping the conversion changes the answer most.
+var finding = 'On RWY ' + biggestErrorRunway.name + ' the two methods differ by '
+              + biggestErrorRunway.error_kt.toFixed(1) + ' kt right now.';
+
+if (biggestErrorRunway.crosswind_uncorrected_kt === 0) {
+    finding += ' The uncorrected method reports exactly zero crosswind \u2014 a clean, confident, '
+             + 'wrong number, and the kind no one queries.';
+}
+
+document.getElementById('now-finding').textContent = finding;
+}
+
+fetch('conditions.json').then(function (r) { return r.json(); }).then(function (c) {
+    nowRender(c);
+}).catch(function () {
+    document.getElementById('now-cat').textContent = 'unavailable';
+});
+
 
 function gisBuildMap() {
   if (gisMap !== null) { return; }
