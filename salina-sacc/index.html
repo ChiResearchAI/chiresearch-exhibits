@@ -208,6 +208,46 @@
   .inv td.src{color:var(--ink-3);font-size:11px;text-align:right}
   .inv-note{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin:9px 0 0}
   .gis-src{font-size:11.5px;color:var(--ink-3);line-height:1.55;margin:10px 0 0}
+
+  /* ------------------------ Part 139 & obstacles ------------------------ */
+  .av-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,1fr);gap:16px;margin-top:16px}
+  @media (max-width:860px){.av-grid{grid-template-columns:1fr}}
+  .av-chart,.av-139{
+    border:1px solid var(--line);border-radius:8px;background:var(--surface-1);padding:14px 16px;
+  }
+  h3.blk{margin:0 0 2px;font-size:14.5px;color:var(--ink)}
+  .av-note{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin:10px 0 0}
+  .av-row{display:grid;grid-template-columns:86px 1fr 54px;gap:9px;align-items:center;margin-bottom:7px}
+  .av-row .bl{font-size:11.5px;color:var(--ink-2);font-variant-numeric:tabular-nums;text-align:right}
+  .av-row .bn{font-size:11.5px;color:var(--ink);font-variant-numeric:tabular-nums;font-weight:600}
+  .av-track{position:relative;height:17px;background:var(--surface-2);border-radius:3px;overflow:hidden;display:flex}
+  .av-seg{display:block;height:100%}
+  .av-seg + .av-seg{box-shadow:-2px 0 0 var(--surface-1)}
+  .av-legend{display:flex;gap:16px;flex-wrap:wrap;margin:10px 0 12px}
+  .av-legend .lg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
+  .av-legend .sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25)}
+  .av-thresh{
+    margin-top:9px;padding:7px 10px;border-radius:5px;font-size:11.5px;line-height:1.5;
+    background:rgba(12,163,12,.10);border:1px solid rgba(12,163,12,.35);color:#0a5c0a;
+  }
+  dl.reg{margin:10px 0 0}
+  dl.reg dt{
+    font-size:11px;font-weight:700;color:var(--ink);letter-spacing:.02em;
+    margin-top:9px;
+  }
+  dl.reg dt:first-child{margin-top:0}
+  dl.reg dd{margin:2px 0 0;font-size:12px;color:var(--ink-2);line-height:1.5}
+  .finding{
+    margin-top:16px;padding:14px 16px;border-radius:8px;
+    background:#fdf8ec;border:1px solid rgba(250,178,25,.55);
+  }
+  .finding .fkick{
+    margin:0 0 9px;font-size:10.5px;font-weight:700;letter-spacing:.09em;
+    text-transform:uppercase;color:#8a6410;
+  }
+  .finding p{margin:0 0 8px;font-size:13.5px;line-height:1.62;color:var(--ink-2)}
+  .finding p:last-child{margin-bottom:0}
+  .finding b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -234,6 +274,7 @@
     <button role="tab" id="t-ops"  aria-controls="p-ops"  aria-selected="false">Airport operations</button>
     <button role="tab" id="t-mx"   aria-controls="p-mx"   aria-selected="false">Maintenance</button>
     <button role="tab" id="t-gis"  aria-controls="p-gis"  aria-selected="false">Airfield GIS</button>
+    <button role="tab" id="t-av"   aria-controls="p-av"   aria-selected="false">Part 139 &amp; obstacles</button>
   </nav>
 </header>
 
@@ -620,6 +661,133 @@
   </details>
 </section>
 
+<!-- ======================= PART 139 & OBSTACLES ======================= -->
+<section class="panel" id="p-av" role="tabpanel" aria-labelledby="t-av">
+  <p class="panel-note">
+    Salina Regional is a Part 139 certificated airport, and the obstacle environment around it is
+    published by the FAA. This view takes that published data and asks the question a Common
+    Operating Picture has to get right: <b>which number would a dashboard put on a screen, and would
+    it be the true one?</b>
+  </p>
+
+  <div class="grid g3">
+    <div class="card">
+      <h3>Obstacles within 5 NM</h3>
+      <p class="cap">FAA Digital Obstacle File, all heights</p>
+      <div class="stat" id="avTotal">—</div>
+      <div class="stat-label">Towers, transmission-line towers, poles, buildings, signs, fences and
+        one grain elevator, each with a published height and lighting status.</div>
+      <div class="verdict v-flat">The raw population</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl>
+          <dt>Source</dt><dd>FAA Digital Obstacle File, retrieved from FAA Aeronautical Information
+            Services. Each record carries a height in feet above ground level and above mean sea
+            level, a lighting code, a marking code, an FAA verification status, and horizontal and
+            vertical accuracy codes.</dd>
+          <dt>Population</dt><dd>Obstacles whose published position falls within 5 nautical miles of
+            the airport reference point and which carry a height value.</dd>
+          <dt>Excluded</dt><dd>Records beyond 5 NM, and records with no published height.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>The number a dashboard would show</h3>
+      <p class="cap">Lighting code of &ldquo;none&rdquo; or &ldquo;unknown&rdquo;</p>
+      <div class="stat" id="avUnlit">—<span class="unit">%</span></div>
+      <div class="stat-label">Aggregate the lighting field without reading it and this is what comes
+        out. It is arithmetically correct and operationally worthless.</div>
+      <div class="verdict v-under">Correct arithmetic, wrong answer</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl>
+          <dt>Definition</dt><dd>Share of the population whose FAA lighting code is <code>N</code>
+            (none) or <code>U</code> (unknown). Note that <code>N</code> and <code>U</code> are
+            different facts: one says there is no light, the other says the FAA does not record
+            one. Collapsing them is itself a definition decision, and it is made visible here
+            rather than buried.</dd>
+        </dl>
+      </details>
+    </div>
+
+    <div class="card">
+      <h3>Obstacles requiring lighting that lack it</h3>
+      <p class="cap">At or above 200 ft AGL, within 5 NM</p>
+      <div class="stat" id="avReal">—</div>
+      <div class="stat-label">Every obstacle at or above the height at which FAA marking and
+        lighting standards normally apply is lit. The tallest unlit object stands at 199 ft.</div>
+      <div class="verdict v-over">The number worth acting on</div>
+      <details class="def">
+        <summary>Definition &amp; source</summary>
+        <dl>
+          <dt>Threshold</dt><dd>FAA guidance is that a structure exceeding 200 ft above ground
+            level, or exceeding an obstruction standard in 14 CFR Part 77, should normally be marked
+            and lighted — AC 70/7460-1M, <i>Obstruction Marking and Lighting</i>, effective
+            16 November 2020. The FAA may also recommend marking or lighting below 200 ft because
+            of a structure's particular location, so this threshold is a filter for reading the
+            file, not a safety determination.</dd>
+          <dt>What this is not</dt><dd>Not an airspace or obstruction evaluation, and not a
+            determination that any structure is or is not a hazard. Those are the FAA's to make.</dd>
+        </dl>
+      </details>
+    </div>
+  </div>
+
+  <div class="finding">
+    <p class="fkick">Finding 4 &middot; the same failure as the heading convention, in a different file</p>
+    <p>Within 5 NM of the airport, <b id="avF1">—</b> of <b id="avF2">—</b> obstacles carry a
+    lighting value of &ldquo;none&rdquo; or &ldquo;unknown&rdquo;. A dashboard that charts that
+    field reports <b id="avF3">—%</b> of the obstacle environment unlit, which reads as an airfield
+    in trouble.</p>
+    <p><b>It is the wrong reading, and the data says so plainly.</b> The tallest object in that
+    entire unlit population stands at <b>199 feet</b> — not one of them reaches the 200-foot height
+    at which FAA marking and lighting standards normally apply. The population is poles, signs,
+    fences and low buildings, and its median height is <b>44 feet</b>. Meanwhile every one of the
+    <b id="avF4">—</b> obstacles at or above 200 ft AGL within 5 NM is lit.</p>
+    <p>Widen to 10 NM and exactly <b>one</b> obstacle at or above 200 ft AGL carries a lighting code
+    of &ldquo;none&rdquo;: a 250-foot tower at 5.5 NM, FAA-verified. <b>That is the item an
+    operations screen should surface — one, not three hundred.</b> The discipline that produces the
+    second answer instead of the first is the same discipline that caught the heading convention in
+    Finding 2: read the field's definition before you aggregate it.</p>
+  </div>
+
+  <div class="av-grid">
+    <div class="av-chart">
+      <h3 class="blk">Height against lighting status</h3>
+      <p class="cap">Every obstacle within 5 NM, banded by height above ground level</p>
+      <div id="avBars"></div>
+      <p class="av-note">The 200-foot line is where FAA marking and lighting standards normally
+        begin to apply. Nothing unlit sits above it.</p>
+    </div>
+
+    <div class="av-139">
+      <h3 class="blk">What drives an inspection here</h3>
+      <p class="cap">14 CFR &sect;139.327, self-inspection program</p>
+      <dl class="reg">
+        <dt>Daily</dt><dd>Except as otherwise required by the Airport Certification Manual.</dd>
+        <dt>On unusual condition</dt><dd>When a condition such as construction or weather may
+          affect safe air carrier operations.</dd>
+        <dt>After an accident or incident</dt><dd>Immediately.</dd>
+        <dt>Records</dt><dd>Each inspection recorded with the conditions found and all corrective
+          actions taken, retained at least 12 consecutive calendar months.</dd>
+      </dl>
+      <p class="av-note"><b>The Authority already holds these records in App139.</b> Nothing in this
+        view reads them, and no inspection record appears anywhere on this page. The point is that
+        the cadence above is what a maintenance and operations view has to be built around, and the
+        obstacle environment on the left is one of the things an inspection regime exists to watch.</p>
+    </div>
+  </div>
+
+  <p class="gis-src">
+    Obstacle records are the <b>FAA Digital Obstacle File</b>, retrieved from FAA Aeronautical
+    Information Services. The regulatory text is 14 CFR &sect;139.327 and FAA AC 70/7460-1M. No
+    Salina Airport Authority system, record or credential is used anywhere on this page, and nothing
+    here is an airspace determination, an obstruction evaluation or a safety finding — those belong
+    to the FAA and to the Authority, not to a demonstration built from public files.
+  </p>
+</section>
+
 <footer>
   <strong>ChiResearch Technologies, LLC</strong> · prepared for Salina Airport Authority,
   SAA-RFQ-2026-10, November 2026.<br>
@@ -687,6 +855,10 @@ tabs.forEach(function (tab) {
 
     // Leaflet cannot measure a hidden container, so the map is built the
     // first time its tab is actually shown, and re-measured on every return.
+    if (tab.id === 't-av') {
+      avBuild();
+    }
+
     if (tab.id === 't-gis') {
       gisBuildMap();
       if (gisMap !== null) {
@@ -1186,6 +1358,123 @@ function gisAddNorthArrow() {
 
 document.getElementById('gisThresh').addEventListener('change', gisRefresh);
 document.getElementById('gisConv').addEventListener('change', gisRefresh);
+
+
+// ---------------------------------------------------------------------------
+// Part 139 & obstacles
+//
+// The whole point of this view is that one field, aggregated without reading
+// its definition, produces a confident wrong answer. So the figures below are
+// computed from the obstacle file at load time rather than typed in.
+// ---------------------------------------------------------------------------
+
+// FAA guidance: a structure exceeding this height above ground level should
+// normally be marked and lighted (AC 70/7460-1M).
+var LIGHTING_THRESHOLD_FT_AGL = 200;
+
+// FAA lighting codes meaning "there is no light" and "the FAA does not record
+// one". They are different facts and the view says so.
+var NOT_KNOWN_LIT_CODES = ['N', 'U'];
+
+var COLOR_LIT = '#0ca30c';       // status good
+var COLOR_NOT_LIT = '#fab219';   // status warning
+
+var avLoaded = false;
+
+function avIsNotKnownLit(obstacle) {
+  return NOT_KNOWN_LIT_CODES.indexOf(obstacle.light) !== -1;
+}
+
+function avBuild() {
+  if (avLoaded) { return; }
+  avLoaded = true;
+
+  fetch('obstacles.json').then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    var obstacles = data.obstacles;
+
+    var notKnownLit = obstacles.filter(avIsNotKnownLit);
+    var atOrAboveThreshold = obstacles.filter(function (o) {
+      return o.agl >= LIGHTING_THRESHOLD_FT_AGL;
+    });
+    var thresholdUnlit = atOrAboveThreshold.filter(avIsNotKnownLit);
+
+    var unlitPercent = (100 * notKnownLit.length / obstacles.length);
+
+    document.getElementById('avTotal').textContent = obstacles.length;
+    document.getElementById('avUnlit').childNodes[0].nodeValue =
+      unlitPercent.toFixed(1);
+    document.getElementById('avReal').textContent = thresholdUnlit.length;
+
+    document.getElementById('avF1').textContent = notKnownLit.length;
+    document.getElementById('avF2').textContent = obstacles.length;
+    document.getElementById('avF3').textContent = unlitPercent.toFixed(1) + '%';
+    document.getElementById('avF4').textContent = atOrAboveThreshold.length;
+
+    avBuildBars(obstacles);
+  });
+}
+
+function avBuildBars(obstacles) {
+  // Height bands, chosen so the regulatory threshold falls on a band edge
+  // rather than inside one.
+  var bands = [
+    {label: '0–49 ft',    low: 0,   high: 50},
+    {label: '50–99 ft',   low: 50,  high: 100},
+    {label: '100–149 ft', low: 100, high: 150},
+    {label: '150–199 ft', low: 150, high: 200},
+    {label: '200+ ft',    low: 200, high: 100000}
+  ];
+
+  var rows = bands.map(function (band) {
+    var inBand = obstacles.filter(function (o) {
+      return o.agl >= band.low && o.agl < band.high;
+    });
+    var notLit = inBand.filter(avIsNotKnownLit).length;
+    return {
+      label: band.label,
+      total: inBand.length,
+      notLit: notLit,
+      lit: inBand.length - notLit,
+      isThresholdBand: (band.low === LIGHTING_THRESHOLD_FT_AGL)
+    };
+  });
+
+  var widest = 0;
+  rows.forEach(function (r) { if (r.total > widest) { widest = r.total; } });
+
+  var html =
+    '<div class="av-legend">' +
+      '<span class="lg"><span class="sw" style="background:' + COLOR_NOT_LIT + '"></span>' +
+        'Lighting none or unknown</span>' +
+      '<span class="lg"><span class="sw" style="background:' + COLOR_LIT + '"></span>' +
+        'Lit (red, dual or medium)</span>' +
+    '</div>';
+
+  rows.forEach(function (r) {
+    var notLitWidth = widest === 0 ? 0 : (100 * r.notLit / widest);
+    var litWidth = widest === 0 ? 0 : (100 * r.lit / widest);
+    html +=
+      '<div class="av-row">' +
+        '<span class="bl">' + r.label + '</span>' +
+        '<span class="av-track">' +
+          '<span class="av-seg" style="width:' + notLitWidth + '%;background:' + COLOR_NOT_LIT + '" ' +
+            'title="' + r.notLit + ' not known to be lit"></span>' +
+          '<span class="av-seg" style="width:' + litWidth + '%;background:' + COLOR_LIT + '" ' +
+            'title="' + r.lit + ' lit"></span>' +
+        '</span>' +
+        '<span class="bn">' + r.total + '</span>' +
+      '</div>';
+  });
+
+  var threshold = rows[rows.length - 1];
+  html += '<div class="av-thresh"><b>&#10003; At and above 200 ft AGL: ' + threshold.total +
+    ' obstacles, ' + threshold.lit + ' lit, ' + threshold.notLit + ' not.</b> ' +
+    'Every band below it is dominated by structures no lighting standard reaches.</div>';
+
+  document.getElementById('avBars').innerHTML = html;
+}
 
 </script>
 </body>

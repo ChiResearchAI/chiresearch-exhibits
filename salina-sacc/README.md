@@ -9,9 +9,9 @@ SAA-RFQ-2026-10 (Smart Airport Dashboard & Operational Intelligence Platform).
 ## What it shows
 
 Ten years of hourly ASOS observations at KSLN (2016–2025), reduced to a
-four-view common operating picture — executive leadership, airport operations,
-maintenance and an airfield GIS — and three findings that are consequences of
-the data rather than restatements of it.
+five-view common operating picture — executive leadership, airport operations,
+maintenance, an airfield GIS, and Part 139 and obstacles — and four findings
+that are consequences of the data rather than restatements of it.
 
 The Authority has stated it maintains no enterprise GIS platform and that GIS
 capability is an initial priority. The GIS view is that capability, standing:
@@ -44,6 +44,31 @@ spread is wide: January runs at 23.47% below VFR against June at 3.69%, a
 factor of 6.4. This is a staffing and maintenance-window fact, not a weather
 observation.
 
+**Finding 4 — the obstacle file produces a confident wrong answer unless you
+read its definitions.** Within 5 NM of the airport, 299 of 322 obstacles in the
+FAA Digital Obstacle File carry a lighting code of "none" or "unknown" — 92.9%.
+Charted without further thought, that reports an airfield in trouble. It is the
+wrong reading. The tallest object in that entire population stands at **199
+feet**, and its median height is 44 feet: poles, signs, fences and low
+buildings. Not one reaches 200 ft AGL, the height at which FAA marking and
+lighting standards normally begin to apply (AC 70/7460-1M). Every one of the
+eight obstacles at or above 200 ft AGL within 5 NM is lit. Widen to 10 NM and
+exactly one obstacle at or above 200 ft carries a lighting code of "none" — a
+250-foot FAA-verified tower at 5.5 NM. That is the item an operations screen
+should surface: one, not three hundred.
+
+The same view states the inspection cadence a Part 139 certificated airport
+works to under 14 CFR §139.327 — daily except as otherwise required by the
+Airport Certification Manual, on an unusual condition such as construction or
+weather, and immediately after an accident or incident, with each inspection
+recorded and retained at least 12 consecutive calendar months. **No Authority
+inspection record is read or displayed anywhere.** The Authority holds those in
+App139; the point is only that the cadence is what an operations and
+maintenance view has to be built around.
+
+Nothing in this exhibit is an airspace determination, an obstruction evaluation
+or a safety finding. Those belong to the FAA and to the Authority.
+
 ## Files
 
 | File | What it is |
@@ -54,6 +79,8 @@ observation.
 | `airfield.geojson` | Airfield geometry: 4 runway pavements and 6 helipads from the FAA, 16 taxiway centrelines, 3 aprons and 13 hangars from OpenStreetMap. |
 | `build_airfield.py` | Rebuilds `airfield.geojson` from both public sources. |
 | `leaflet.css`, `leaflet.js` | Leaflet 1.9.4, vendored so the map has no CDN dependency. |
+| `obstacles.json` | 322 FAA Digital Obstacle File records within 5 NM, with height AGL and AMSL, lighting, marking and FAA verification status. |
+| `analyze_obstacles.py` | Recomputes the obstacle findings from the file and prints them. |
 
 ## Map sources, and why each one
 
