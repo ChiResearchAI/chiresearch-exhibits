@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SLN Common Operating Picture — Demonstration</title>
+<link rel="stylesheet" href="leaflet.css">
 <style>
   :root{
     color-scheme: light;
@@ -23,6 +24,8 @@
     --accent:#2a78d6;
     --warn:#eb6834;
     --good:#1baf7a;
+    --st-good:#0ca30c;
+    --st-warn:#fab219;
   }
   *{box-sizing:border-box}
   body{
@@ -119,6 +122,92 @@
   .footnote{font-size:11.5px;color:var(--ink-3);margin-top:10px;line-height:1.5}
   footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--ink-3);line-height:1.6}
   .sronly{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+  /* ---------------------------- Airfield GIS ---------------------------- */
+  .gis-wrap{margin-top:14px}
+  .gis-controls{
+    display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;
+    padding:12px 14px;border:1px solid var(--line);border-radius:8px;
+    background:var(--surface-2);margin-bottom:12px;
+  }
+  .gis-controls .ctl{display:flex;flex-direction:column;gap:5px;min-width:230px}
+  .gis-controls label{
+    font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--ink-3);font-weight:600;
+  }
+  .gis-controls select{
+    font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line-strong);
+    border-radius:5px;background:var(--surface-1);color:var(--ink);min-width:230px;
+  }
+  .gis-legend{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-left:auto}
+  .gis-legend .lg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--ink-2)}
+  .gis-legend .sw{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.25);flex:none}
+  .gis-legend .ic{font-weight:700;font-size:12px}
+
+  .gis-main{
+    display:grid;grid-template-columns:minmax(380px,520px) minmax(280px,1fr);
+    gap:14px;align-items:stretch;
+  }
+  @media (max-width:860px){.gis-main{grid-template-columns:1fr}}
+  #gisMap{
+    height:600px;border:1px solid var(--line-strong);border-radius:8px;
+    background:#eceae4;
+  }
+  .leaflet-container{background:#eceae4;font:inherit}
+
+  .gis-side{
+    border:1px solid var(--line);border-radius:8px;background:var(--surface-1);
+    padding:14px;overflow:auto;max-height:600px;
+  }
+  .rw-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:8px}
+  .gis-side h4{margin:0 0 3px;font-size:14.5px;color:var(--ink)}
+  .gis-side .hint{font-size:12px;color:var(--ink-3);margin:0 0 12px}
+  .rw-card{
+    border:1px solid var(--line);border-radius:6px;padding:9px 10px;
+    cursor:pointer;background:var(--surface-1);
+  }
+  .rw-card:hover{border-color:var(--line-strong);background:var(--surface-2)}
+  .rw-card.sel{border-color:var(--accent);box-shadow:0 0 0 2px rgba(42,120,214,.14)}
+  .rw-card .top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .rw-card .nm{font-weight:700;font-size:13.5px;color:var(--ink)}
+  .rw-card .pc{font-variant-numeric:tabular-nums;font-weight:700;font-size:13.5px}
+  .rw-card .dim{font-size:11.5px;color:var(--ink-3);margin-top:2px}
+  .rw-card .st{
+    display:inline-flex;align-items:center;gap:5px;margin-top:6px;
+    font-size:11px;font-weight:600;padding:2px 7px;border-radius:999px;
+  }
+  .st-ok{background:rgba(12,163,12,.12);color:#076b07}
+  .st-no{background:rgba(250,178,25,.20);color:#6b4a02}
+  .gis-flip{
+    margin-top:10px;padding:9px 10px;border-radius:6px;
+    background:rgba(250,178,25,.13);border:1px solid rgba(250,178,25,.45);
+    font-size:11.5px;line-height:1.5;color:#5c4305;
+  }
+  .rw-label{background:none;border:none}
+  .rwl{
+    display:inline-block;white-space:nowrap;padding:2px 7px;border-radius:999px;
+    font-size:11px;font-weight:600;font-variant-numeric:tabular-nums;
+    border:1px solid rgba(0,0,0,.3);box-shadow:0 1px 3px rgba(0,0,0,.18);
+    transform:translate(-50%,-50%);cursor:pointer;
+  }
+  .rwl b{font-weight:800}
+  .rwl.ok{background:#e8f6e8;color:#076b07;border-color:rgba(12,163,12,.55)}
+  .rwl.no{background:#fdf1d6;color:#6b4a02;border-color:rgba(250,178,25,.75)}
+  .gis-north{
+    background:var(--surface-1);border:1px solid var(--line-strong);border-radius:6px;
+    padding:5px 7px;text-align:center;line-height:1.1;box-shadow:0 1px 3px rgba(0,0,0,.12);
+  }
+  .gis-north .arw{display:block;font-size:11px;color:var(--ink)}
+  .gis-north .lbl{display:block;font-size:11px;font-weight:700;color:var(--ink)}
+  .gis-north .var{display:block;font-size:9px;color:var(--ink-3);margin-top:1px}
+  .inv-h{margin:16px 0 6px !important}
+  .inv{width:100%;border-collapse:collapse;font-size:12px}
+  .inv td{padding:4px 0;border-bottom:1px solid var(--line);color:var(--ink-2)}
+  .inv td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:700;
+    color:var(--ink);width:34px;padding-right:10px}
+  .inv td.src{color:var(--ink-3);font-size:11px;text-align:right}
+  .inv-note{font-size:11.5px;color:var(--ink-3);line-height:1.5;margin:9px 0 0}
+  .gis-src{font-size:11.5px;color:var(--ink-3);line-height:1.55;margin:10px 0 0}
 </style>
 </head>
 <body>
@@ -144,6 +233,7 @@
     <button role="tab" id="t-exec" aria-controls="p-exec" aria-selected="true">Executive leadership</button>
     <button role="tab" id="t-ops"  aria-controls="p-ops"  aria-selected="false">Airport operations</button>
     <button role="tab" id="t-mx"   aria-controls="p-mx"   aria-selected="false">Maintenance</button>
+    <button role="tab" id="t-gis"  aria-controls="p-gis"  aria-selected="false">Airfield GIS</button>
   </nav>
 </header>
 
@@ -461,6 +551,75 @@
   </div>
 </section>
 
+<!-- ============================ AIRFIELD GIS ============================ -->
+<section class="panel" id="p-gis" role="tabpanel" aria-labelledby="t-gis">
+  <p class="panel-note">
+    The Authority has no enterprise GIS today. This is the airfield as a map, built from public
+    data, with the wind-coverage determination carried on the geometry itself rather than printed
+    in a table beside it. Change the design standard and the airfield recolours; change the heading
+    convention and watch which runway changes verdict.
+  </p>
+
+  <div class="gis-wrap">
+    <div class="gis-controls">
+      <div class="ctl">
+        <label for="gisThresh">Allowable crosswind component</label>
+        <select id="gisThresh">
+          <option value="10.5">10.5 kt &mdash; RDC A-I and B-I</option>
+          <option value="13.0">13 kt &mdash; RDC A-II and B-II</option>
+          <option value="16.0">16 kt &mdash; RDC A-III, B-III, C-I through D-III</option>
+          <option value="20.0">20 kt &mdash; RDC A-IV and above</option>
+        </select>
+      </div>
+      <div class="ctl">
+        <label for="gisConv">Runway heading convention</label>
+        <select id="gisConv">
+          <option value="corrected">Corrected for 7&deg;E magnetic variation</option>
+          <option value="uncorrected">Uncorrected &mdash; designator read as true</option>
+        </select>
+      </div>
+      <div class="gis-legend" id="gisLegend"></div>
+    </div>
+
+    <div class="gis-main">
+      <div id="gisMap" role="img"
+           aria-label="Map of Salina Regional Airport showing four runways, taxiways, aprons and hangars, each runway shaded by whether its wind coverage meets the FAA 95% recommendation."></div>
+      <div class="gis-side" id="gisSide"></div>
+    </div>
+  </div>
+
+  <p class="gis-src">
+    Runway footprints are FAA Aeronautical Information Services <i>Runways</i> polygons &mdash; the
+    regulator&rsquo;s own geometry, not a redrawing of it. Taxiways, aprons and hangars are
+    OpenStreetMap, used because the FAA publishes no Airport Mapping Database for SLN. No basemap
+    tiles are loaded from any third party, so nothing on this page depends on an outside service
+    staying up. Nothing here comes from a Salina Airport Authority system, record or credential.
+  </p>
+
+  <details class="def">
+    <summary>Definition &amp; source</summary>
+    <dl>
+      <dt>Runway shading</dt>
+      <dd>All-weather wind coverage for that runway alone, at the selected allowable crosswind
+        component, over 85,824 hourly observations (2016&ndash;2025). Green where coverage meets or
+        exceeds the 95% recommended in AC 150/5300-13B Change 1; amber where it falls below. Shading
+        never carries the verdict by itself &mdash; every runway is labelled with its figure and its
+        status in words.</dd>
+      <dt>Heading convention</dt>
+      <dd>METAR wind direction is true; FAA runway designators are magnetic. Published variation at
+        SLN is 7&deg;E. <b>Corrected</b> converts the designator to a true bearing before computing
+        the crosswind, which is the correct method. <b>Uncorrected</b> compares the magnetic
+        designator directly against true wind &mdash; the quiet, ordinary mistake. Both are shown
+        because the choice changes the verdict on Runway 17/35 and a reader cannot see which
+        convention a dashboard used.</dd>
+      <dt>What this is not</dt>
+      <dd>A prototype built for this submittal, not a deployed system and not a prior client
+        implementation. It demonstrates that the Authority&rsquo;s airfield can be stood up as
+        interactive GIS from public data in Phase 1, before any Authority system is touched.</dd>
+    </dl>
+  </details>
+</section>
+
 <footer>
   <strong>ChiResearch Technologies, LLC</strong> · prepared for Salina Airport Authority,
   SAA-RFQ-2026-10, November 2026.<br>
@@ -473,6 +632,7 @@
 
 </div>
 
+<script src="leaflet.js"></script>
 <script>
 // ---------------------------------------------------------------------------
 // Data. Every value here was computed from the public archive by the analysis
@@ -524,6 +684,15 @@ tabs.forEach(function (tab) {
       document.getElementById(other.getAttribute('aria-controls'))
               .classList.toggle('active', isThis);
     });
+
+    // Leaflet cannot measure a hidden container, so the map is built the
+    // first time its tab is actually shown, and re-measured on every return.
+    if (tab.id === 't-gis') {
+      gisBuildMap();
+      if (gisMap !== null) {
+        window.setTimeout(function () { gisMap.invalidateSize(); }, 0);
+      }
+    }
   });
 });
 
@@ -710,6 +879,314 @@ tabs.forEach(function (tab) {
     container.appendChild(row);
   }
 })();
+
+// ---------------------------------------------------------------------------
+// Airfield GIS
+//
+// The map is deliberately vector-only. No basemap tiles are requested from any
+// third-party service, so the exhibit cannot break because somebody else's
+// tile server is down, and no outside party learns who is reading it.
+// ---------------------------------------------------------------------------
+
+// Coverage with the magnetic designator read directly against true wind --
+// the mistake Finding 2 is about. The corrected figures are in COVERAGE above.
+var COVERAGE_UNCORRECTED = {
+  "10.5": {"04/22":82.47,"12/30":81.64,"17/35":95.29,"18/36":94.58},
+  "13.0": {"04/22":90.28,"12/30":89.71,"17/35":98.11,"18/36":97.52},
+  "16.0": {"04/22":95.54,"12/30":95.58,"17/35":99.26,"18/36":98.94},
+  "20.0": {"04/22":98.53,"12/30":98.82,"17/35":99.80,"18/36":99.67}
+};
+
+var FAA_COVERAGE_RECOMMENDATION = 95.0;
+
+var STATUS_GOOD = '#0ca30c';
+var STATUS_WARN = '#fab219';
+
+var gisMap = null;
+var gisRunwayLayers = {};
+var gisRunwayLabels = {};
+var gisLayerCounts = {};
+var gisSelected = null;
+
+function gisCoverageTable() {
+  var convention = document.getElementById('gisConv').value;
+  if (convention === 'uncorrected') {
+    return COVERAGE_UNCORRECTED;
+  }
+  return COVERAGE;
+}
+
+function gisCoverageFor(runwayName) {
+  var threshold = document.getElementById('gisThresh').value;
+  return gisCoverageTable()[threshold][runwayName];
+}
+
+function gisMeetsStandard(runwayName) {
+  return gisCoverageFor(runwayName) >= FAA_COVERAGE_RECOMMENDATION;
+}
+
+function gisRunwayStyle(runwayName) {
+  var meets = gisMeetsStandard(runwayName);
+  var fill = meets ? STATUS_GOOD : STATUS_WARN;
+  var selected = (runwayName === gisSelected);
+  return {
+    color: selected ? '#0b0b0b' : '#4a4943',
+    weight: selected ? 3.2 : 2,
+    fillColor: fill,
+    fillOpacity: selected ? 0.9 : 0.78
+  };
+}
+
+function gisBuildMap() {
+  if (gisMap !== null) { return; }
+
+  gisMap = L.map('gisMap', {
+    zoomControl: true,
+    attributionControl: false,
+    scrollWheelZoom: false
+  });
+
+  fetch('airfield.geojson').then(function (response) {
+    return response.json();
+  }).then(function (data) {
+    var runwayFeatures = [];
+
+    // Draw the context layers first so runways sit on top of them.
+    var contextStyles = {
+      apron:   {color:'#b9b7ae', weight:0.8, fillColor:'#cfcdc4', fillOpacity:0.85},
+      hangar:  {color:'#a9a79e', weight:0.8, fillColor:'#bfbdb4', fillOpacity:0.9},
+      taxiway: {color:'#9c9a92', weight:1.6, opacity:0.95},
+      helipad: {color:'#8a8982', weight:0.8, fillColor:'#a8a69d', fillOpacity:0.9}
+    };
+
+    data.features.forEach(function (feature) {
+      var layerName = feature.properties.layer;
+
+      if (layerName === 'runway') {
+        runwayFeatures.push(feature);
+        return;
+      }
+
+      var style = contextStyles[layerName];
+      if (!style) { return; }
+      L.geoJSON(feature, {style: style}).addTo(gisMap);
+    });
+
+    // Count what actually got drawn, so the inventory below the map is a
+    // readout of the layer rather than a sentence somebody typed.
+    data.features.forEach(function (feature) {
+      var layerName = feature.properties.layer;
+      var source = feature.properties.source;
+      if (!gisLayerCounts[layerName]) {
+        gisLayerCounts[layerName] = {count: 0, source: source};
+      }
+      gisLayerCounts[layerName].count += 1;
+    });
+
+    // Runways on top, each one clickable.
+    runwayFeatures.forEach(function (feature) {
+      var runwayName = feature.properties.name;
+      var layer = L.geoJSON(feature, {
+        style: gisRunwayStyle(runwayName)
+      }).addTo(gisMap);
+
+      layer.on('click', function () {
+        gisSelect(runwayName);
+      });
+
+      gisRunwayLayers[runwayName] = layer;
+    });
+
+    // A runway nobody can identify is decoration, so every runway carries a
+    // permanent label with its designator and its current coverage figure.
+    // Put each label at the runway end farthest from the middle of the
+    // airfield. Labels placed at runway centres all pile up on the
+    // intersection, which is exactly where they are least readable.
+    var fieldCentre = L.featureGroup(Object.keys(gisRunwayLayers).map(function (k) {
+      return gisRunwayLayers[k];
+    })).getBounds().getCenter();
+
+    runwayFeatures.forEach(function (feature) {
+      var runwayName = feature.properties.name;
+      var centre = gisRunwayEndLabelPoint(feature, fieldCentre);
+      var marker = L.marker(centre, {
+        interactive: true,
+        icon: L.divIcon({className: 'rw-label', html: '', iconSize: [96, 30]})
+      }).addTo(gisMap);
+      marker.on('click', function () { gisSelect(runwayName); });
+      gisRunwayLabels[runwayName] = marker;
+    });
+
+    // Frame the airfield on the runways, which is what the view is about.
+    var allRunways = L.featureGroup(Object.keys(gisRunwayLayers).map(function (k) {
+      return gisRunwayLayers[k];
+    }));
+    gisMap.fitBounds(allRunways.getBounds(), {padding: [52, 44]});
+
+    L.control.scale({imperial: true, metric: false, position: 'bottomleft'}).addTo(gisMap);
+    gisAddNorthArrow();
+
+    gisRefresh();
+  });
+}
+
+function gisRunwayEndLabelPoint(feature, fieldCentre) {
+  // Walk every vertex of the runway polygon and keep the one lying farthest
+  // from the centre of the airfield. For a long thin rectangle that vertex is
+  // always at one of the two ends.
+  var rings = feature.geometry.coordinates;
+  if (feature.geometry.type === 'MultiPolygon') {
+    rings = feature.geometry.coordinates[0];
+  }
+
+  var bestPoint = null;
+  var bestDistance = -1;
+
+  rings.forEach(function (ring) {
+    ring.forEach(function (position) {
+      var lon = position[0];
+      var lat = position[1];
+      var dLon = lon - fieldCentre.lng;
+      var dLat = lat - fieldCentre.lat;
+      var distance = (dLon * dLon) + (dLat * dLat);
+      if (distance > bestDistance) {
+        bestDistance = distance;
+        bestPoint = [lat, lon];
+      }
+    });
+  });
+
+  return bestPoint;
+}
+
+function gisSelect(runwayName) {
+  gisSelected = (gisSelected === runwayName) ? null : runwayName;
+  gisRefresh();
+}
+
+function gisRefresh() {
+  // Repaint every runway for the current threshold and convention.
+  Object.keys(gisRunwayLayers).forEach(function (runwayName) {
+    gisRunwayLayers[runwayName].setStyle(gisRunwayStyle(runwayName));
+
+    var marker = gisRunwayLabels[runwayName];
+    if (!marker) { return; }
+    var coverage = gisCoverageFor(runwayName);
+    var meets = gisMeetsStandard(runwayName);
+    var mark = meets ? '\u2713' : '\u26a0';
+    var cls = meets ? 'ok' : 'no';
+    marker.getElement().innerHTML =
+      '<span class="rwl ' + cls + '">' +
+        '<b>' + runwayName + '</b> ' + coverage.toFixed(2) + '% ' + mark +
+      '</span>';
+  });
+
+  gisBuildLegend();
+  gisBuildSide();
+}
+
+function gisBuildLegend() {
+  var legend = document.getElementById('gisLegend');
+  legend.innerHTML =
+    '<span class="lg"><span class="sw" style="background:' + STATUS_GOOD + '"></span>' +
+      '<span class="ic">&#10003;</span> Meets 95%</span>' +
+    '<span class="lg"><span class="sw" style="background:' + STATUS_WARN + '"></span>' +
+      '<span class="ic">&#9888;</span> Below 95%</span>';
+}
+
+function gisBuildSide() {
+  var side = document.getElementById('gisSide');
+  var threshold = document.getElementById('gisThresh').value;
+  var order = ["17/35", "12/30", "18/36", "04/22"];
+
+  var html = '<h4>Runways at ' + threshold + ' kt</h4>' +
+             '<p class="hint">Select a runway on the map or here.</p>' +
+             '<div class="rw-grid">';
+
+  order.forEach(function (runwayName) {
+    var runway = null;
+    RUNWAYS.forEach(function (r) { if (r.name === runwayName) { runway = r; } });
+
+    var coverage = gisCoverageFor(runwayName);
+    var meets = gisMeetsStandard(runwayName);
+    var selectedClass = (runwayName === gisSelected) ? ' sel' : '';
+
+    html += '<div class="rw-card' + selectedClass + '" data-rw="' + runwayName + '">' +
+      '<div class="top"><span class="nm">RWY ' + runwayName + '</span>' +
+      '<span class="pc">' + coverage.toFixed(2) + '%</span></div>' +
+      '<div class="dim">' + runway.length.toLocaleString() + ' &times; ' + runway.width +
+        ' ft &middot; designator ' + runway.mag + '&deg; magnetic</div>' +
+      '<span class="st ' + (meets ? 'st-ok' : 'st-no') + '">' +
+        (meets ? '&#10003; Meets the 95% recommendation' : '&#9888; Below the 95% recommendation') +
+      '</span></div>';
+  });
+
+  html += '</div>';
+
+  // Say plainly when the two conventions disagree on this runway.
+  var flipped = [];
+  order.forEach(function (runwayName) {
+    var corrected = COVERAGE[threshold][runwayName] >= FAA_COVERAGE_RECOMMENDATION;
+    var uncorrected = COVERAGE_UNCORRECTED[threshold][runwayName] >= FAA_COVERAGE_RECOMMENDATION;
+    if (corrected !== uncorrected) { flipped.push(runwayName); }
+  });
+
+  if (flipped.length > 0) {
+    html += '<div class="gis-flip"><b>&#9888; Convention changes the verdict here.</b> ' +
+      'At ' + threshold + ' kt, RWY ' + flipped.join(' and ') + ' passes under one heading ' +
+      'convention and fails under the other, on identical observations. Switch the second ' +
+      'control to see it move.</div>';
+  }
+
+  // What is actually on the map, and where each layer came from.
+  var LAYER_LABELS = {
+    runway:  'Runway pavements',
+    helipad: 'Helipads',
+    taxiway: 'Taxiway centrelines',
+    apron:   'Aprons',
+    hangar:  'Hangars'
+  };
+  var inventoryRows = '';
+  ['runway', 'helipad', 'taxiway', 'apron', 'hangar'].forEach(function (layerName) {
+    var entry = gisLayerCounts[layerName];
+    if (!entry) { return; }
+    inventoryRows +=
+      '<tr><td>' + LAYER_LABELS[layerName] + '</td>' +
+      '<td class="n">' + entry.count + '</td>' +
+      '<td class="src">' + entry.source + '</td></tr>';
+  });
+
+  html += '<h4 class="inv-h">What is on this map</h4>' +
+    '<table class="inv"><tbody>' + inventoryRows + '</tbody></table>' +
+    '<p class="inv-note">Five layers, standing up in Phase 1 from public data alone. ' +
+    'Authority sources &mdash; the electronic ALP, App139 inspection records, LeaseQuery ' +
+    'property data &mdash; attach to this same map without rebuilding it.</p>';
+
+  side.innerHTML = html;
+
+  Array.prototype.slice.call(side.querySelectorAll('.rw-card')).forEach(function (card) {
+    card.addEventListener('click', function () {
+      gisSelect(card.getAttribute('data-rw'));
+    });
+  });
+}
+
+function gisAddNorthArrow() {
+  var NorthArrow = L.Control.extend({
+    options: {position: 'topright'},
+    onAdd: function () {
+      var div = L.DomUtil.create('div', 'gis-north');
+      div.innerHTML = '<span class="arw">&#9650;</span><span class="lbl">N</span>' +
+                      '<span class="var">true</span>';
+      return div;
+    }
+  });
+  gisMap.addControl(new NorthArrow());
+}
+
+document.getElementById('gisThresh').addEventListener('change', gisRefresh);
+document.getElementById('gisConv').addEventListener('change', gisRefresh);
+
 </script>
 </body>
 </html>

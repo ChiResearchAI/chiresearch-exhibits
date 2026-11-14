@@ -9,8 +9,16 @@ SAA-RFQ-2026-10 (Smart Airport Dashboard & Operational Intelligence Platform).
 ## What it shows
 
 Ten years of hourly ASOS observations at KSLN (2016–2025), reduced to a
-three-view common operating picture and three findings that are consequences of
+four-view common operating picture — executive leadership, airport operations,
+maintenance and an airfield GIS — and three findings that are consequences of
 the data rather than restatements of it.
+
+The Authority has stated it maintains no enterprise GIS platform and that GIS
+capability is an initial priority. The GIS view is that capability, standing:
+the airfield as an interactive map with the wind-coverage determination carried
+on the runway geometry itself. Changing the allowable crosswind component
+recolours the airfield by Runway Design Code; changing the heading convention
+moves Runway 17/35 across the 95% line while the reader watches.
 
 **Finding 1 — Runway 17/35 does not meet the FAA 95% recommendation for the
 smallest aircraft.** Wind coverage for Runway 17/35 at the 10.5-knot allowable
@@ -40,9 +48,29 @@ observation.
 
 | File | What it is |
 |---|---|
-| `index.html` | The exhibit — three views (executive, operations, maintenance). Self-contained; no build step. |
+| `index.html` | The exhibit — four views (executive, operations, maintenance, airfield GIS). No build step. |
 | `reproduce.py` | Re-fetches the archive and recomputes every figure. No API key needed. |
 | `results.json` | Computed wind-coverage results by runway and crosswind threshold. |
+| `airfield.geojson` | Airfield geometry: 4 runway pavements and 6 helipads from the FAA, 16 taxiway centrelines, 3 aprons and 13 hangars from OpenStreetMap. |
+| `build_airfield.py` | Rebuilds `airfield.geojson` from both public sources. |
+| `leaflet.css`, `leaflet.js` | Leaflet 1.9.4, vendored so the map has no CDN dependency. |
+
+## Map sources, and why each one
+
+Runway pavements come from the **FAA Aeronautical Information Services
+`Runways` layer** — the regulator's own geometry. Runway shape is what the wind
+analysis makes a compliance determination about, so it should not come from a
+crowd-sourced map. The FAA's published dimensions independently agree with the
+figures used throughout: 17/35 at 12,301 × 150 ft, 12/30 at 6,510 × 100,
+18/36 at 4,301 × 75, 04/22 at 3,648 × 75.
+
+Taxiways, aprons and hangars come from **OpenStreetMap**. They are context for
+reading the airfield and carry no compliance meaning here, and the FAA publishes
+no Airport Mapping Database for SLN.
+
+**No basemap tiles are requested from any third party.** The map is vector-only,
+so the exhibit cannot break because somebody else's tile server is down, and no
+outside party learns who is reading it.
 
 ## Reproducing
 
@@ -50,7 +78,8 @@ observation.
 python3 reproduce.py
 ```
 
-Stdlib only. Re-fetches from the Iowa Environmental Mesonet ASOS archive each
+Stdlib only, and `python3 build_airfield.py` likewise rebuilds the map data.
+`reproduce.py` re-fetches from the Iowa Environmental Mesonet ASOS archive each
 run (station SLN, `report_type=3`, hourly routine observations), so a later
 observation period changes the output rather than silently reusing a cached
 file. The script ends with three checks that re-derive the published findings
@@ -83,3 +112,10 @@ and a different ceiling or visibility cut would move the below-VFR share;
 and runway usability computed from wind alone is not an operational
 availability figure, which also depends on surface condition, lighting,
 approach minimums and NOTAMs that this exhibit does not model.
+
+On the map specifically: this is a prototype built for a submittal, not a
+deployed system and not a prior client implementation. Taxiway, apron and hangar
+geometry is crowd-sourced and has not been surveyed. The Authority holds the
+surveyed airfield geometry in its electronic Airport Layout Plan; in an
+engagement the eALP becomes the authoritative source and the public geometry
+here is retired rather than carried forward.
