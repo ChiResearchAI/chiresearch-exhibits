@@ -716,19 +716,23 @@
       <p class="cap">At or above 200 ft AGL, within 5 NM</p>
       <div class="stat" id="avReal">—</div>
       <div class="stat-label">Every obstacle at or above the height at which FAA marking and
-        lighting standards normally apply is lit. The tallest unlit object stands at 199 ft.</div>
+        lighting standards generally attach is lit. The tallest unlit object stands at 199 ft.
+        Height is a screening filter here, not a safety determination.</div>
       <div class="verdict v-over">The number worth acting on</div>
       <details class="def">
         <summary>Definition &amp; source</summary>
         <dl>
           <dt>Threshold</dt><dd>FAA guidance is that a structure exceeding 200 ft above ground
             level, or exceeding an obstruction standard in 14 CFR Part 77, should normally be marked
-            and lighted — AC 70/7460-1M, <i>Obstruction Marking and Lighting</i>, effective
-            16 November 2020. The FAA may also recommend marking or lighting below 200 ft because
-            of a structure's particular location, so this threshold is a filter for reading the
-            file, not a safety determination.</dd>
-          <dt>What this is not</dt><dd>Not an airspace or obstruction evaluation, and not a
-            determination that any structure is or is not a hazard. Those are the FAA's to make.</dd>
+            and lighted — <b>AC 70/7460-1N</b>, <i>Obstruction Marking and Lighting</i>, active
+            since 11 August 2026, superseding AC 70/7460-1M. The FAA may also recommend marking or
+            lighting below 200 ft where a structure's location or an obstruction surface warrants
+            it, so this height is a <b>screening filter for reading the file</b>, not a line between
+            objects that matter and objects that do not.</dd>
+          <dt>What this is not</dt><dd>A screening and data-quality finding about how an operational
+            metric should be computed. Not a compliance determination, not an airspace or
+            obstruction evaluation, and not a determination that any structure is or is not a
+            hazard. Those are the FAA's to make.</dd>
         </dl>
       </details>
     </div>
@@ -781,7 +785,7 @@
 
   <p class="gis-src">
     Obstacle records are the <b>FAA Digital Obstacle File</b>, retrieved from FAA Aeronautical
-    Information Services. The regulatory text is 14 CFR &sect;139.327 and FAA AC 70/7460-1M. No
+    Information Services. The regulatory text is 14 CFR &sect;139.327 and FAA AC 70/7460-1N. No
     Salina Airport Authority system, record or credential is used anywhere on this page, and nothing
     here is an airspace determination, an obstruction evaluation or a safety finding — those belong
     to the FAA and to the Authority, not to a demonstration built from public files.
@@ -1369,7 +1373,7 @@ document.getElementById('gisConv').addEventListener('change', gisRefresh);
 // ---------------------------------------------------------------------------
 
 // FAA guidance: a structure exceeding this height above ground level should
-// normally be marked and lighted (AC 70/7460-1M).
+// normally be marked and lighted (AC 70/7460-1N, active since 11 August 2026).
 var LIGHTING_THRESHOLD_FT_AGL = 200;
 
 // FAA lighting codes meaning "there is no light" and "the FAA does not record

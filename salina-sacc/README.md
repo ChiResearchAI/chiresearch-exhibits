@@ -51,7 +51,11 @@ Charted without further thought, that reports an airfield in trouble. It is the
 wrong reading. The tallest object in that entire population stands at **199
 feet**, and its median height is 44 feet: poles, signs, fences and low
 buildings. Not one reaches 200 ft AGL, the height at which FAA marking and
-lighting standards normally begin to apply (AC 70/7460-1M). Every one of the
+notice and marking-and-lighting standards generally attach (AC 70/7460-1N,
+active since 11 August 2026, superseding 70/7460-1M). Height is a screening
+filter for reading the file rather than a line between objects that matter and
+objects that do not — the FAA may recommend marking or lighting below 200 ft
+where a structure's location or an obstruction surface warrants it. Every one of the
 eight obstacles at or above 200 ft AGL within 5 NM is lit. Widen to 10 NM and
 exactly one obstacle at or above 200 ft carries a lighting code of "none" — a
 250-foot FAA-verified tower at 5.5 NM. That is the item an operations screen
@@ -66,8 +70,10 @@ inspection record is read or displayed anywhere.** The Authority holds those in
 App139; the point is only that the cadence is what an operations and
 maintenance view has to be built around.
 
-Nothing in this exhibit is an airspace determination, an obstruction evaluation
-or a safety finding. Those belong to the FAA and to the Authority.
+These are **screening and data-quality findings** about how an operational metric
+should be computed. Nothing in this exhibit is a compliance determination, an
+airspace or obstruction evaluation, or a safety finding. Those belong to the FAA
+and to the Authority.
 
 ## Files
 
